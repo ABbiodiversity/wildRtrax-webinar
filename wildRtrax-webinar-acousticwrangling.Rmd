@@ -1,0 +1,164 @@
+---
+title: "wildRtrax webinar"
+subtitle: "acoustic data wrangling in R &#x1F50A;"
+author: Marcus Becker, Alex MacPhail, Elly Knight 
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts] 
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      hightlightSpans: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include = FALSE, eval = TRUE}
+
+options(htmltools.dir.version = FALSE)
+
+library(knitr)
+library(dplyr)
+library(stringr)
+library(tidyr)
+library(wildRtrax)
+library(purrr)
+
+
+opts_chunk$set(
+  #prompt = T,
+  fig.align="center", #fig.width=6, fig.height=4.5, 
+  # out.width="748px", #out.length="520.75px",
+  dpi=300, #fig.path='Figs/',
+  cache=T#, echo=F, warning=F, message=F
+  )
+
+hook_source <- knitr::knit_hooks$get('source')
+knitr::knit_hooks$set(source = function(x, options) {
+  x <- stringr::str_replace(x, "^[[:blank:]]?([^*].+?)[[:blank:]]*#<<[[:blank:]]*$", "*\\1")
+  hook_source(x, options)
+})
+
+```
+
+```{css, echo=FALSE}
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 40%;
+  height: 92%;
+  float: left;
+}
+.left-code-less {
+  color: #777;
+  width: 25%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 58%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-more {
+  width: 65%;
+  float: right;
+  padding-left: 1%;
+}
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+```
+
+# So now you have some processed acoustic data
+
+### Let's look at some convenience functions to kick-start your analysis
+
+
+---
+# Recall: data download
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+# Set our account details and login to WildTrax
+
+source("login.R")
+wt_auth()
+```
+
+--
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+# What are the projects we can access?
+
+my_projects <- wt_get_download_summary(sensor_id = "ARU") %>% 
+  filter(status=="Published - Public") %>% 
+  select(-organization_id, -status)
+```
+
+---
+
+### PSA: There is a *LOT* of public data available in WildTrax!!!
+
+--
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+glimpse(my_projects)
+# 65 projects!
+
+```
+--
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+sum(my_projects$tasks)
+# Over 75K tasks!
+
+```
+
+---
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+# Ok PSA over, let's get the data, something small
+
+my_project <- my_projects %>% 
+  filter(tasks < 200) %>% 
+  sample_n(1)
+
+# What did we get?
+my_project$project
+
+my_data <- wt_download_report(
+  project_id = my_project$project_id,
+  sensor_id = "ARU",
+  reports = "main",
+  weather_cols = FALSE
+)
+
+```
+
+--
+
+*N.B.* The functions we're reviewing today operate on the *main* report
+
+---
+
+
+
+---
+# What if I have data in the point count sensor?
