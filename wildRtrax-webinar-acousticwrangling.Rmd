@@ -82,9 +82,29 @@ border: 4px solid #23373B;
 
 ```
 
-# Part 1: Data Wrangling 
+# Acoustic wrangling workflow
 
-### So now you have some processed acoustic data. Let's look at some convenient wrangling functions to kick-start your analysis
+### Part 1: Data wrangling
+
+.center[<img src="pics/Slide2.PNG" width=650>]
+
+.footnote[Note: we'll be reviewing the functions in this order but they can also be used independent of each other]
+
+---
+
+# Acoustic wrangling workflow
+
+### Part 1: Data analytics
+
+.center[<img src="pics/Slide3.PNG" width=650>]
+
+---
+
+# Part 1: Data wrangling 
+
+### So now you have some processed acoustic data.
+
+### Let's look at some wrangling functions to prepare your data for analysis.
 
 ---
 # Recall: data download
@@ -310,6 +330,8 @@ table(my_tidy_data$individual_count)
 
 "an abbreviation used to indicate an uncountable number of individuals within the bounds of a tag"
 
+.footnote[Note: 'TMTT' is being phased out and so the **wt_replace_tmtt()** function is primarily applicable to historic datasets]
+
 --
 
 ### Ok, so now what? Options:
@@ -395,7 +417,7 @@ ggplot(my_wide_data %>%
 
 ---
 
-# Part 2: Analytics
+# Part 2: Data analytics
 
 ### The analytics area is under active development! We have 2 tools so far:
 
@@ -445,6 +467,12 @@ library(unmarked)
 my_occu_model <- occu(~ observer ~ 1,
             my_occu_data)
 
+```
+
+--
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
 my_occu_model@estimates@estimates[["det"]]
 
 ```
@@ -455,7 +483,7 @@ my_occu_model@estimates@estimates[["det"]]
 
 ### QPAD is a statistical approach for dealing with imperfect and variable detectability
 
-<img src="pics/QPADpaper.png" width=800>
+.center[<img src="pics/QPADpaper.png" width=800>]
 
 .footnote[ABMI & the Boreal Avian Modelling (BAM) project both use QPAD in our species distribution models]
 
@@ -468,7 +496,7 @@ my_occu_model@estimates@estimates[["det"]]
 - Perceptibility (tau) is estimated with distance models
 - Phi and tau are combined to provide values that can be used as statistical offsets in a wide variety of models
 
-<img src="pics/phiandtau.png" width=800>
+.center[<img src="pics/phiandtau.png" width=750>]
 
 ---
 
@@ -509,7 +537,7 @@ my_qpad_model <- lm(WTSP ~ 1, offset=my_offset_data$WTSP, data=my_wide_data)
 
 ### Functions to convert data from the point count sensor to formats compatible with the existing functions will be available soon.
 <br />
-### STAY TUNED!
+## STAY TUNED!
 
 
 ```
