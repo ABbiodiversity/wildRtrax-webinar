@@ -32,7 +32,7 @@ opts_chunk$set(
   # out.width="748px", #out.length="520.75px",
   dpi=300, #fig.path='Figs/',
   cache=T#, echo=F, warning=F, message=F
-  )
+)
 
 hook_source <- knitr::knit_hooks$get('source')
 knitr::knit_hooks$set(source = function(x, options) {
@@ -45,46 +45,66 @@ knitr::knit_hooks$set(source = function(x, options) {
 ```{css, echo=FALSE}
 /* custom.css */
 .left-code {
-  color: #777;
-  width: 40%;
-  height: 92%;
-  float: left;
+color: #777;
+width: 40%;
+height: 92%;
+float: left;
 }
 .left-code-less {
-  color: #777;
-  width: 25%;
-  height: 92%;
-  float: left;
+color: #777;
+width: 25%;
+height: 92%;
+float: left;
 }
 .right-plot {
-  width: 58%;
-  float: right;
-  padding-left: 1%;
+width: 58%;
+float: right;
+padding-left: 1%;
 }
 .right-plot-more {
-  width: 65%;
-  float: right;
-  padding-left: 1%;
+width: 65%;
+float: right;
+padding-left: 1%;
 }
 .plot-callout {
-  height: 225px;
-  width: 450px;
-  bottom: 5%;
-  right: 5%;
-  position: absolute;
-  padding: 0px;
-  z-index: 100;
+height: 225px;
+width: 450px;
+bottom: 5%;
+right: 5%;
+position: absolute;
+padding: 0px;
+z-index: 100;
 }
 .plot-callout img {
-  width: 100%;
-  border: 4px solid #23373B;
+width: 100%;
+border: 4px solid #23373B;
 }
 
 ```
 
-# Part 1: Data Wrangling 
+# Acoustic wrangling workflow
 
-### So now you have some processed acoustic data. Let's look at some convenient wrangling functions to kick-start your analysis
+### Part 1: Data wrangling
+
+.center[<img src="pics/Slide2.PNG" width=650>]
+
+.footnote[Note: we'll be reviewing the functions in this order but they can also be used independent of each other]
+
+---
+
+# Acoustic wrangling workflow
+
+### Part 1: Data analytics
+
+.center[<img src="pics/Slide3.PNG" width=650>]
+
+---
+
+# Part 1: Data wrangling 
+
+### So now you have some processed acoustic data.
+
+### Let's look at some wrangling functions to prepare your data for analysis.
 
 ---
 # Recall: data download
@@ -213,13 +233,13 @@ my_data %>%
 ### This function removes species groups that you aren't interested in
 
 We can remove some or all of the following groups:
-  - mammal (e.g., Red Squirrel)
-  - amphibian (e.g., Boreal Chorus Frog)
-  - abiotic (e.g., wind, rain, background noise)
-  - insect (e.g., crickets)
-  - bird (why would you want to take these out)
-  - unknown (e.g., Unidentified Passerine)
-  
+- mammal (e.g., Red Squirrel)
+- amphibian (e.g., Boreal Chorus Frog)
+- abiotic (e.g., wind, rain, background noise)
+- insect (e.g., crickets)
+- bird (why would you want to take these out)
+- unknown (e.g., Unidentified Passerine)
+
 ---
 
 # wt_tidy_species()
@@ -310,6 +330,8 @@ table(my_tidy_data$individual_count)
 
 "an abbreviation used to indicate an uncountable number of individuals within the bounds of a tag"
 
+.footnote[Note: 'TMTT' is being phased out and so the **wt_replace_tmtt()** function is primarily applicable to historic datasets]
+
 --
 
 ### Ok, so now what? Options:
@@ -395,16 +417,16 @@ ggplot(my_wide_data %>%
 
 ---
 
-# Part 2: Analytics
+# Part 2: Data analytics
 
 ### The analytics area is under active development! We have 2 tools so far:
+
+.footnote[SPOILER ALERT: This is a great area for contribution!]
 
 --
 
 - wt_format_occupancy(): format data for single species, single season occupancy models in unmarked
 - wt_qpad_offsets(): calculate QPAD offsets to account for imperfect detection
-
-.footnote[SPOILER ALERT: This is a great area for contribution!]
 
 ---
 
@@ -419,17 +441,18 @@ i.e., don't use wt_make_wide()
 my_occu_data <- wt_format_occupancy(my_tmtt_data, species="WTSP", siteCovs = NULL)
 
 ```
-.footnote[Note: Site covariates must be user-supplied]
 
 --
 
-### What do we have for observation covariates?
+### What do we get for observation covariates?
 
 ```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
 
 names(my_occu_data@obsCovs)
 
 ```
+
+.footnote[Note: Site covariates must be user-supplied, additional observation covariates can be added via collaboration!]
 
 ---
 
@@ -441,10 +464,16 @@ names(my_occu_data@obsCovs)
 
 library(unmarked)
 
-mod <- occu(~ observer ~ 1,
+my_occu_model <- occu(~ observer ~ 1,
             my_occu_data)
 
-mod@estimates@estimates[["det"]]
+```
+
+--
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+my_occu_model@estimates@estimates[["det"]]
 
 ```
 
@@ -453,19 +482,21 @@ mod@estimates@estimates[["det"]]
 # wt_qpad_offsets()
 
 ### QPAD is a statistical approach for dealing with imperfect and variable detectability
-<br />
-<img src="pics/QPADpaper.png" width=800>
+
+.center[<img src="pics/QPADpaper.png" width=800>]
+
+.footnote[ABMI & the Boreal Avian Modelling (BAM) project both use QPAD in our species distribution models]
 
 ---
 # wt_qpad_offsets()
 
 ### How does it work?
 
-- Availability (phi) for detection is estimated with removal models
+- Availability for detection (phi) is estimated with removal models
 - Perceptibility (tau) is estimated with distance models
 - Phi and tau are combined to provide values that can be used as statistical offsets in a wide variety of models
 
-### ABMI & the Boreal Avian Modelling (BAM) project both use QPAD offsets in our species distribution models
+.center[<img src="pics/phiandtau.png" width=750>]
 
 ---
 
@@ -475,18 +506,12 @@ mod@estimates@estimates[["det"]]
 - Phi and tau have already been modelled by BAM
 - The wt_qpad_offsets() function uses those models to calculate custom offsets for the day, time, and habitat types in your data
 
-<img src="pics/phiandtau.png" width=800>
-
----
-
-# wt_qpad_offsets()
-
-### We use the wide version of the data for input
+--
 
 ```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
 
 # We can get offsets for all species, or a named subset
-my_offset_data <- wt_qpad_offsets(my_wide_data, species=c("all"))
+my_offset_data <- wt_qpad_offsets(my_wide_data, species=c("OVEN", "WTSP", "YEWA"))
 
 ```
 
@@ -501,7 +526,8 @@ my_offset_data <- wt_qpad_offsets(my_wide_data, species=c("all"))
 # Let's look at the values
 summary(my_offset_data$WTSP)
 
-mod <- lm(WTSP ~ 1, offset=my_offset_data$WTSP, data=my_wide_data)
+# Run a simple linear model
+my_qpad_model <- lm(WTSP ~ 1, offset=my_offset_data$WTSP, data=my_wide_data)
 
 ```
 
@@ -509,6 +535,9 @@ mod <- lm(WTSP ~ 1, offset=my_offset_data$WTSP, data=my_wide_data)
 ---
 # What if I have point count data?
 
-### TO BE CONTINUED
+### Functions to convert data from the point count sensor to formats compatible with the existing functions will be available soon.
+<br />
+## STAY TUNED!
+
 
 ```
