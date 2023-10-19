@@ -4,7 +4,7 @@
     <title>wildRtrax</title>
     <meta charset="utf-8" />
     <meta name="author" content="Marcus Becker, Alex MacPhail, Elly Knight" />
-    <meta name="date" content="2023-10-17" />
+    <meta name="date" content="2023-10-18" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
@@ -24,7 +24,7 @@ class: center, middle, inverse, title-slide
 ### Marcus Becker, Alex MacPhail, Elly Knight
 ]
 .date[
-### 2023-10-17
+### 2023-10-18
 ]
 
 ---
@@ -70,7 +70,7 @@ class: center, middle, inverse, title-slide
   border: 4px solid #23373B;
 }
 body, h1, h2, h3, h4, h5, h6, p, ul, ol {
-  font-family: "Agenda", sans-serif; /* Replace "Agenda" with the actual font name */
+  font-family: "Agenda", sans-serif; font-size: 20px /* Replace "Agenda" with the actual font name */
 }
 .my-one-page-font {
   font-size: 18px;
@@ -91,28 +91,27 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 
 # Preface
 
-- We assume you know WildTrax
-  - WildTrax is a web-enabled portal designed to manage, store, process, share and discover environmental sensor data
-  - WildTrax is developed and maintained by the Alberta Biodiversity Monitoring Institute
-  
+- We assume you're using an *environmental sensor* such as an **autonomous recording unit (ARU)** or **remote camera**
 
-- We assume you know R
+
+- We assume you know *WildTrax*
+
+  - A web-enabled portal designed to manage, store, process, share and discover environmental sensor data
+
+
+- We assume you know *R*
+
   - R is a programming language mainly used for statistical computing and data analysis
   
-
-
 ---
 
-# What is `wildRtrax`
+## What is `wildRtrax`
 
 - An R package for ecologists and advanced users who work with environmental sensors
-  + Autonomous recording units (ARUs)
-  + Remote cameras
+  
 - It contains functions designed to meet most needs in order to organize, analyze and standardize data with the WildTrax infrastructure. 
 
----
-
-# Why did you build `wildRtrax`?
+## Why did you build `wildRtrax`?
 
 - `wildRtrax` has been built in parallel with WildTrax to provide additional analytics and functionalities
 
@@ -120,7 +119,7 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 
 ---
 
-# Who is `wildRtrax`?
+## Who is `wildRtrax`?
 
 - Us
 
@@ -128,9 +127,9 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 
 ---
 
-# Agenda
+# Today's Agenda
 
-- Downloading the package
+- Installing the package
 - Pre-processing acoustic data
 - Downloading data from WildTrax
 - Wrangling camera and acoustic data for analysis
@@ -141,6 +140,16 @@ Photo page here
 
 ---
 
+# Installing the package
+
+`remotes::install_github('ABbiodiversity/wildRtrax')`
+
+Interested in recent fixes? Download the development branch instead:
+
+`remotes::install_github('ABbiodiversity/wildRtrax@development')`
+
+---
+
 class: my-one-page-font
 
 # Scanning acoustic data
@@ -149,31 +158,34 @@ class: my-one-page-font
 
 
 ```r
+# Load the package
+library(wildRtrax)
+
 # Plan futures
-future::plan(multisession)
+plan(strategy = multisession)
 
 # Scan data
-files &lt;- wt_audio_scanner(path = ".", file_type = "wav", extra_cols = F)
+files &lt;- wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T)
 ```
 
 
 ```
-## # A tibble: 1,041 × 11
-##    file_path     size_Mb unsafe file_name location recording_date_time file_type
-##    &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;    
-##  1 /volumes/bud…    3.51 Safe   228-NE_2… 228-NE   2021-11-21 12:35:49 wav      
-##  2 /volumes/bud…  106.   Safe   228-NE_2… 228-NE   2022-03-01 00:00:00 wav      
-##  3 /volumes/bud…   31.8  Safe   228-NE_2… 228-NE   2022-03-01 02:00:00 wav      
-##  4 /volumes/bud…  106.   Safe   228-NE_2… 228-NE   2022-03-01 08:59:00 wav      
-##  5 /volumes/bud…   31.8  Safe   228-NE_2… 228-NE   2022-03-01 10:29:00 wav      
-##  6 /volumes/bud…   31.8  Safe   228-NE_2… 228-NE   2022-03-01 12:00:00 wav      
-##  7 /volumes/bud…   31.8  Safe   228-NE_2… 228-NE   2022-03-01 15:00:00 wav      
-##  8 /volumes/bud…   31.8  Safe   228-NE_2… 228-NE   2022-03-01 18:17:00 wav      
-##  9 /volumes/bud…   31.8  Safe   228-NE_2… 228-NE   2022-03-01 20:17:00 wav      
-## 10 /volumes/bud…  106.   Safe   228-NE_2… 228-NE   2022-03-02 00:00:00 wav      
-## # ℹ 1,031 more rows
-## # ℹ 4 more variables: julian &lt;dbl&gt;, year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;,
-## #   time_index &lt;int&gt;
+## # A tibble: 1,166 × 13
+##    file_path     size_Mb file_name location recording_date_time file_type julian
+##    &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;      &lt;dbl&gt;
+##  1 /volumes/bud…    4.36 339-NW_2… 339-NW   2022-11-17 15:28:51 wav          321
+##  2 /volumes/bud…  106.   339-NW_2… 339-NW   2023-03-01 00:00:00 wav           60
+##  3 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 02:00:00 wav           60
+##  4 /volumes/bud…  106.   339-NW_2… 339-NW   2023-03-01 09:00:00 wav           60
+##  5 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 10:30:00 wav           60
+##  6 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 12:00:00 wav           60
+##  7 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 15:00:00 wav           60
+##  8 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 18:16:00 wav           60
+##  9 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 20:16:00 wav           60
+## 10 /volumes/bud…  106.   339-NW_2… 339-NW   2023-03-02 00:00:00 wav           61
+## # ℹ 1,156 more rows
+## # ℹ 6 more variables: year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;, time_index &lt;int&gt;,
+## #   length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;, n_channels &lt;dbl&gt;
 ```
 
 ---
@@ -182,23 +194,24 @@ files &lt;- wt_audio_scanner(path = ".", file_type = "wav", extra_cols = F)
 
 
 ```r
-files %&gt;%
+files |&gt;
   names()
 ```
 
 ```
-##  [1] "file_path"           "size_Mb"             "unsafe"             
-##  [4] "file_name"           "location"            "recording_date_time"
-##  [7] "file_type"           "julian"              "year"               
-## [10] "gps_enabled"         "time_index"
+##  [1] "file_path"           "size_Mb"             "file_name"          
+##  [4] "location"            "recording_date_time" "file_type"          
+##  [7] "julian"              "year"                "gps_enabled"        
+## [10] "time_index"          "length_seconds"      "sample_rate"        
+## [13] "n_channels"
 ```
 
 - `location` (where the recording was taken)
 - `recording_date_time` (when the recording was taken)
 
-**`LOCATION_20230528_071000.wav`**
+**`339-NW_20230528_071000.wav`**
 
-You can also add arguments `extra_cols` (sample rate) or `tz` if you want to force a timezone to the recording.
+You can also add arguments `extra_cols` (sample_rate, length_seconds, n_channels) or `tz` if you want to assign a timezone to the recordings.
 
 `wt_audio_scanner(path = '.', file_type = 'wav', extra_cols = T, tz = 'US/Mountain')`
 
@@ -208,36 +221,36 @@ You can also add arguments `extra_cols` (sample rate) or `tz` if you want to for
 
 
 ```r
-files %&gt;%
-  mutate(hour = lubridate::hour(recording_date_time)) %&gt;%
+files |&gt;
+  mutate(hour = lubridate::hour(recording_date_time)) |&gt;
   filter(julian %in% c(140:150),
          hour %in% c(4:8))
 ```
 
 ```
-## # A tibble: 22 × 12
-##    file_path     size_Mb unsafe file_name location recording_date_time file_type
-##    &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;    
-##  1 /volumes/bud…   106.  Safe   228-NE_2… 228-NE   2022-05-20 05:57:00 wav      
-##  2 /volumes/bud…    31.8 Safe   228-NE_2… 228-NE   2022-05-20 07:27:00 wav      
-##  3 /volumes/bud…   106.  Safe   228-NE_2… 228-NE   2022-05-21 05:55:00 wav      
-##  4 /volumes/bud…    31.8 Safe   228-NE_2… 228-NE   2022-05-21 07:25:00 wav      
-##  5 /volumes/bud…   106.  Safe   228-NE_2… 228-NE   2022-05-22 05:54:00 wav      
-##  6 /volumes/bud…    31.8 Safe   228-NE_2… 228-NE   2022-05-22 07:24:00 wav      
-##  7 /volumes/bud…   106.  Safe   228-NE_2… 228-NE   2022-05-23 05:52:00 wav      
-##  8 /volumes/bud…    31.8 Safe   228-NE_2… 228-NE   2022-05-23 07:22:00 wav      
-##  9 /volumes/bud…   106.  Safe   228-NE_2… 228-NE   2022-05-24 05:51:00 wav      
-## 10 /volumes/bud…    31.8 Safe   228-NE_2… 228-NE   2022-05-24 07:21:00 wav      
+## # A tibble: 22 × 14
+##    file_path     size_Mb file_name location recording_date_time file_type julian
+##    &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;      &lt;dbl&gt;
+##  1 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-20 05:57:00 wav          140
+##  2 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-20 07:27:00 wav          140
+##  3 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-21 05:55:00 wav          141
+##  4 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-21 07:25:00 wav          141
+##  5 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-22 05:54:00 wav          142
+##  6 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-22 07:24:00 wav          142
+##  7 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-23 05:53:00 wav          143
+##  8 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-23 07:23:00 wav          143
+##  9 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-24 05:51:00 wav          144
+## 10 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-24 07:21:00 wav          144
 ## # ℹ 12 more rows
-## # ℹ 5 more variables: julian &lt;dbl&gt;, year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;,
-## #   time_index &lt;int&gt;, hour &lt;int&gt;
+## # ℹ 7 more variables: year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;, time_index &lt;int&gt;,
+## #   length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;, n_channels &lt;dbl&gt;, hour &lt;int&gt;
 ```
 
 ---
 
 class: my-one-page-font
 
-# Generating acoustic indices
+# Generating acoustic indices and LDFCs
 
 
 ```r
@@ -247,39 +260,77 @@ wt_run_ap(x = files, output_dir = 'ap_outputs', path_to_ap = '/where/you/store/A
 
 
 ```r
-wt_glean_ap(files %&gt;% 
-              mutate(hour = lubridate::hour(recording_date_time)) %&gt;%
+results &lt;- wt_glean_ap(files |&gt; 
+              mutate(hour = lubridate::hour(recording_date_time)) |&gt;
               filter(between(julian,110,220),
                      hour %in% c(0:3,22:23)), 
             input_dir = ".../ap_outputs", purpose = "biotic")
+
+
+# The raw data
+# results[[1]]
+
+# The indices
+results[[2]]
+
+# The LDFC
+results[[3]]
 ```
 
 .pull-left[
-&lt;img src="986-se-indices.png"&gt;
+&lt;img src="339-nw-indices.png"&gt;
 ]
 
 .pull-right[
-&lt;img src="986-se.png"&gt;
+&lt;img src="339-nw.png"&gt;
 ]
 
 ---
 
 # Creating tasks and tags
 
+## Upload recordings and generate tasks simulatenously
+
++ Go to a Project and select Manage &gt; Upload Recordings to Project
+
 
 ```r
-# Generate tasks from tags
-wt_make_aru_tasks(
-  files,
-  output = "my_tasks.csv",
-  task_method = "1SPT",
-  task_length = 180
-)
+# Choose recordings for the ABMI Stratified Design for Ecosystem Health
+tasks &lt;- files |&gt;
+  inner_join(abmi_blocks, by = c("julian" = "julian", "time_index" = "time_index")) |&gt;
+  drop_na(blocks) |&gt;
+  group_by(location, blocks) |&gt;
+  sample_n(1, replace = F) |&gt;
+  ungroup() |&gt;
+  map(.x = .$file_path, .f = ~file.copy(.x, to = "/my/selected/files"))
 ```
 
 ---
 
 # Creating tasks and tags
+
+## Upload recordings and create tasks later
+
++ Go to the Organization &gt; Recordings &gt; Manage &gt; Upload Recordings and create tasks later using `wt_make_aru_tasks()`
+
+
+```r
+my_tasks &lt;- wt_make_aru_tasks(
+  tasks %&gt;% 
+    select(-c(blocks:recs)),
+  output = NULL,
+  task_method = "1SPT",
+  task_length = 180
+)
+
+my_tasks
+```
+
+---
+
+# Creating tasks and tags
+
+.left-column[
 
 ## From Songscope
 
@@ -297,10 +348,9 @@ wt_songscope_tags(
   task_length = 180
 )
 ```
+]
 
----
-
-# Creating tasks and tags
+.right-column[
 
 ## From Kaleidoscope
 
@@ -312,6 +362,7 @@ wt_kaleidoscope_tags(input = files,
                      freq_bump = 20000)
 ```
 
+]
 ---
 
 # Another day perhaps...
@@ -326,7 +377,7 @@ Other things to try (that we didn't have time for today)
 
 ## Handing it off to Marcus!
 
-![](handingitoff.jpg){width=40%}
+&lt;img src="handingitoff.jpg" width=30% align=middle&gt;
 ---
 
 
