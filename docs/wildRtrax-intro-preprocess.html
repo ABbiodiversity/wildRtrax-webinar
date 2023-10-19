@@ -4,7 +4,7 @@
     <title>wildRtrax</title>
     <meta charset="utf-8" />
     <meta name="author" content="Marcus Becker, Alex MacPhail, Elly Knight" />
-    <meta name="date" content="2023-10-18" />
+    <meta name="date" content="2023-10-19" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
@@ -24,7 +24,7 @@ class: center, middle, inverse, title-slide
 ### Marcus Becker, Alex MacPhail, Elly Knight
 ]
 .date[
-### 2023-10-18
+### 2023-10-19
 ]
 
 ---
@@ -96,26 +96,28 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 
 - We assume you know *WildTrax*
 
-  - A web-enabled portal designed to manage, store, process, share and discover environmental sensor data
+  - A web-enabled portal designed to manage, store, process, share and discover environmental sensor data, developed by the ABMI
 
 
 - We assume you know *R*
 
-  - R is a programming language mainly used for statistical computing and data analysis
+  - A programming language mainly used for statistical computing and data analysis
   
 ---
+
+# wildRtrax
 
 ## What is `wildRtrax`
 
 - An R package for ecologists and advanced users who work with environmental sensors
   
-- It contains functions designed to meet most needs in order to organize, analyze and standardize data with the WildTrax infrastructure. 
+- Contains functions designed to meet most needs in order to organize, analyze and standardize data with the WildTrax infrastructure
 
 ## Why did you build `wildRtrax`?
 
-- `wildRtrax` has been built in parallel with WildTrax to provide additional analytics and functionalities
+- `wildRtrax` has been built in parallel&lt;sup&gt;1&lt;/sup&gt; with WildTrax to provide additional analytics and functionalities
 
-- By outlining a standardized and harmonized procedure for data intake, quality control, processing and verification of environmental sensor data,`wildRtrax` and WildTrax hope to provide open workflows for using environmental sensors to help answer biological and ecological questions
+- By outlining a standardized and harmonized procedure for data intake, quality control, processing and verification of environmental sensor data,`wildRtrax` and WildTrax hope to provide open work flows for environmental sensors to help answer biological and ecological questions
 
 ---
 
@@ -133,10 +135,11 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 - Pre-processing acoustic data
 - Downloading data from WildTrax
 - Wrangling camera and acoustic data for analysis
+- Contributing to package and submitting issues
 
 ---
 
-Photo page here
+&lt;img src="drake.png" style="width:60%;" align="center"&gt;
 
 ---
 
@@ -357,7 +360,7 @@ wt_songscope_tags(
 
 ```r
 # Generate a tag csv to upload to WildTrax 
-wt_kaleidoscope_tags(input = files,
+wt_kaleidoscope_tags(input = "kaleidoscope_output.txt",
                      output = "my_bat_tags.csv"
                      freq_bump = 20000)
 ```
@@ -366,8 +369,6 @@ wt_kaleidoscope_tags(input = files,
 ---
 
 # Another day perhaps...
-
-Other things to try (that we didn't have time for today)
 
 - `wt_signal_level()` detects signals in audio based on amplitude thresholds
 - `wt_chop()` divides a large audio file into shorter segments
