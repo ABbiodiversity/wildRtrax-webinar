@@ -25,6 +25,7 @@ library(tidyr)
 library(wildRtrax)
 library(purrr)
 library(ggplot2)
+library(lubridate)
 
 opts_chunk$set(
   #prompt = T,
@@ -94,7 +95,7 @@ border: 4px solid #23373B;
 
 # Acoustic wrangling workflow
 
-### Part 1: Data analytics
+### Part 2: Data analytics
 
 .center[<img src="pics/Slide3.PNG" width=650>]
 
@@ -118,9 +119,7 @@ wt_auth()
 
 # What are the projects we can access?
 
-my_projects <- wt_get_download_summary(sensor_id = "ARU") %>% 
-  filter(status=="Published - Public") %>% 
-  select(-organization_id, -status)
+my_projects <- wt_get_download_summary(sensor_id = "ARU")
 
 ```
 
@@ -134,10 +133,12 @@ my_projects <- wt_get_download_summary(sensor_id = "ARU") %>%
 
 ```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
 
-glimpse(my_projects)
+glimpse(my_projects %>% 
+  filter(status %in% c("Published - Public", "Published - Map+Report Only")) %>% 
+  select(-organization_id, -status))
 
 ```
-**65 projects!**
+**87 projects!**
 
 --
 
@@ -146,7 +147,7 @@ glimpse(my_projects)
 sum(my_projects$tasks)
 
 ```
-**Over 75K tasks!**
+**Almost half a million tasks!**
 
 ---
 
@@ -159,7 +160,8 @@ sum(my_projects$tasks)
 # Pick something small
 set.seed(12345)
 my_project <- my_projects %>% 
-  filter(tasks < 200) %>% 
+  filter(status %in% c("Published - Public", "Published - Map+Report Only"),
+         tasks < 200) %>% 
   sample_n(1)
 
 # What did we get?
@@ -220,7 +222,7 @@ colnames(my_data)
 ```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
 
 my_data %>% 
-  dplyr::select(species_common_name, species_code) %>% 
+  select(species_common_name, species_code) %>% 
   unique() %>% 
   head(10)
 
@@ -269,7 +271,7 @@ my_tidy_data <- wt_tidy_species(my_data,
                                          "abiotic",
                                          "insect",
                                          "unknown"),
-                                zerofill=TRUE)
+                                zerofill=TRUE) #<<
 
 ```
 .footnote[Note: This function downloads a species table to do the filtering]
@@ -283,7 +285,7 @@ my_tidy_data <- wt_tidy_species(my_data,
 ```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
 
 my_tidy_data %>% 
-  dplyr::select(species_common_name, species_code) %>% 
+  select(species_common_name, species_code) %>% 
   unique() %>% 
   head(10)
 
@@ -330,14 +332,14 @@ table(my_tidy_data$individual_count)
 
 "an abbreviation used to indicate an uncountable number of individuals within the bounds of a tag"
 
-.footnote[Note: 'TMTT' is being phased out and so the **wt_replace_tmtt()** function is primarily applicable to historic datasets]
+.footnote[Note: 'TMTT' is being phased out and so the `wt_replace_tmtt()` function is primarily applicable to historic datasets]
 
 --
 
 ### Ok, so now what? Options:
 - convert data to presence/absence (i.e., 1, 0)
 - regex abundance estimates out of comments field (not recommended)
-- **wt_replace_tmtt()!**
+- `wt_replace_tmtt()!`
 
 --
 
@@ -377,21 +379,25 @@ ggplot(my_tmtt_data) +
 
 --
 
-wt_make_wide() aggregates the counts by task and provides a column of counts for each species 
+`wt_make_wide()` aggregates the counts by task and provides a column of counts for each species 
 
 ```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
 
 # We can filter by sound type (i.e., call or song), let's keep everything
-my_wide_data <- wt_make_wide(my_tmtt_data, sound="all")
+my_wide_data <- wt_make_wide(my_tmtt_data,
+                             sound="all") #<<
 
 ```
 
---
+---
+
+# wt_make_wide()
+
+### What does the output look like?
 
 ```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
 
-# Now let's check our first 30 field names
-colnames(my_wide_data)[c(1:30)]
+glimpse(my_wide_data[c(1:17)], width=75)
 
 ```
 
@@ -425,26 +431,64 @@ ggplot(my_wide_data %>%
 
 --
 
-- wt_format_occupancy(): format data for single species, single season occupancy models in unmarked
-- wt_qpad_offsets(): calculate QPAD offsets to account for imperfect detection
+- `wt_format_occupancy()` formats data for single species, single season occupancy models in the `unmarked` package
+- `wt_qpad_offsets()` calculates QPAD offsets to account for imperfect detection
 
 ---
 
 # wt_format_occupancy()
 
 ### This function operates on the long form of the data
-i.e., don't use wt_make_wide()
+i.e., don't use `wt_make_wide()`
+
+--
+
+### Site covariates must be user-supplied, so let's make some up
+It should be a dataframe with one row for each location surveyed
+<br />
+See `?unmarked::unmarkedFrameOccu()` for details
 
 ```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
 
-# Let's pick our favourite species
-my_occu_data <- wt_format_occupancy(my_tmtt_data, species="WTSP", siteCovs = NULL)
+# Make sure to sort by location so that the order
+siteCovs <- my_tmtt_data %>% 
+  select(location) %>% 
+  unique() %>% 
+  mutate(tree = runif(n(), 0, 1)) %>% 
+  arrange(location) #<<
+
+```
+
+---
+
+# wt_format_occupancy()
+
+### What do the `siteCovs` look like?
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+glimpse(siteCovs, width=75)
 
 ```
 
 --
 
-### What do we get for observation covariates?
+### Ok let's use the function
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+# Let's pick our favourite species
+my_occu_data <- wt_format_occupancy(my_tmtt_data,
+                                    species="WTSP",
+                                    siteCovs = siteCovs) #<<
+
+```
+
+---
+
+# wt_format_occupany()
+
+### What do we get for `obsCovs`?
 
 ```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
 
@@ -452,30 +496,42 @@ names(my_occu_data@obsCovs)
 
 ```
 
-.footnote[Note: Site covariates must be user-supplied, additional observation covariates can be added via collaboration!]
+.footnote[Note: Additional observation covariates could be added via collaboration!]
 
----
+--
 
-#wt_format_occupancy()
-
-### Let's see if detectability varies between observers
+### Let's see if detectability varies between observers and occupancy by "tree"
 
 ```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
 
 library(unmarked)
 
-my_occu_model <- occu(~ observer ~ 1,
+my_occu_model <- occu(~ observer ~ tree,
             my_occu_data)
 
 ```
 
---
+---
+
+# wt_format_occupancy()
 
 ```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
 
 my_occu_model@estimates@estimates[["det"]]
 
 ```
+
+Good job observers!
+
+--
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+my_occu_model@estimates@estimates[["state"]]
+
+```
+
+That's a relief, because we made up "tree"...
 
 ---
 
@@ -504,7 +560,7 @@ my_occu_model@estimates@estimates[["det"]]
 
 ### Ok cool, that's useful, how do I get offsets?
 - Phi and tau have already been modelled by BAM
-- The wt_qpad_offsets() function uses those models to calculate custom offsets for the day, time, and habitat types in your data
+- The `wt_qpad_offsets()` function uses those models to calculate custom offsets for the day, time, and habitat types in your data
 
 --
 
