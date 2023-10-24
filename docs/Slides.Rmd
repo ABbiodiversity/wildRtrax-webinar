@@ -101,13 +101,6 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 
 - We assume you're using an *environmental sensor* such as an **autonomous recording unit (ARU)** or **remote camera**
 
-  
----
-
-# Preface
-
-- We assume you're using an *environmental sensor* such as an **autonomous recording unit (ARU)** or **remote camera**
-
 --
 
 - We assume you know [WildTrax](www.wildtrax.ca)
