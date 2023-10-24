@@ -4,7 +4,7 @@
     <title>wildRtrax</title>
     <meta charset="utf-8" />
     <meta name="author" content="Marcus Becker, Alex MacPhail, Elly Knight" />
-    <meta name="date" content="2023-10-23" />
+    <meta name="date" content="2023-10-24" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
@@ -24,7 +24,7 @@ class: center, middle, inverse, title-slide
 ### Marcus Becker, Alex MacPhail, Elly Knight
 ]
 .date[
-### 2023-10-23
+### 2023-10-24
 ]
 
 ---
@@ -100,23 +100,13 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 
 - We assume you're using an *environmental sensor* such as an **autonomous recording unit (ARU)** or **remote camera**
 
+--
 
-- We assume you know *WildTrax*
+- We assume you know [WildTrax](www.wildtrax.ca)
 
   - A web-enabled portal designed to manage, store, process, share and discover environmental sensor data, developed by the ABMI
-
   
----
-
-# Preface
-
-- We assume you're using an *environmental sensor* such as an **autonomous recording unit (ARU)** or **remote camera**
-
-
-- We assume you know *WildTrax*
-
-  - A web-enabled portal designed to manage, store, process, share and discover environmental sensor data, developed by the ABMI
-
+--
 
 - We assume you know *R*
 
@@ -126,21 +116,13 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 
 # wildRtrax
 
-## What is `wildRtrax`
+## What is the `wildRtrax` R package?
 
 - An R package for ecologists and advanced users who work with environmental sensors
-  
-- Contains functions designed to meet most needs in order to organize, analyze and standardize data with the WildTrax infrastructure
 
----
+- Contains functions designed to meet most needs in order to organize, analyze, and standardize data with the WildTrax infrastructure
 
-# wildRtrax
-
-## What is `wildRtrax`
-
-- An R package for ecologists and advanced users who work with environmental sensors
-  
-- Contains functions designed to meet most needs in order to organize, analyze and standardize data with the WildTrax infrastructure
+--
 
 ## Why did you build `wildRtrax`?
 
@@ -150,53 +132,82 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 
 ---
 
-## Who is `wildRtrax`?
-
-- Us
-
----
+# wildRtrax
 
 ## Who is `wildRtrax`?
 
 - Us
 
-- And YOU! (you'll learn how to make a pull request soon)
+--
+
+- And (hopefully) **YOU**! (we'll show you how to contribute to the package)
 
 ---
 
 # Today's Agenda
 
-- Installing the package
-- Pre-processing acoustic data
-- Downloading data from WildTrax
-- Wrangling camera and acoustic data for analysis
-- Contributing to package and submitting issues
+&lt;br&gt;
+
+### 1. [Installing the package](#install)
+
+### 2. [Pre-processing acoustic data](#preprocess)
+
+### 3. [Downloading data from WildTrax](#download)
+
+### 4. [Wrangling camera and acoustic data for analysis](#wrangle)
+
+### 5. [Contributing to the package and submitting issues](#contribute)
 
 ---
-class: center, middle
+class: center, top
 
 &lt;img src="drakehalf.png" style="width:60%;" align="center"&gt;
 
 ---
 class: center, middle
+count: false
+# #goals
 
 &lt;img src="drake.png" style="width:60%;" align="center"&gt;
 
 ---
 
-# Installing the package
+class: inverse, center, middle
+name: install
 
-`remotes::install_github('ABbiodiversity/wildRtrax')`
+# Installing wildRtrax 
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1100px&gt;&lt;/html&gt;
 
 ---
 
-# Installing the package
+# Installing wildRtrax
 
-`remotes::install_github('ABbiodiversity/wildRtrax')`
+&lt;br&gt;
+### Download directly from Github using the `remotes` package:
 
-Interested in recent fixes? Download the development branch instead:
 
-`remotes::install_github('ABbiodiversity/wildRtrax@development')`
+```r
+remotes::install_github('ABbiodiversity/wildRtrax')
+```
+
+--
+
+### Interested in recent fixes? Download the development branch instead, by including the **@development** tag:
+
+
+```r
+remotes::install_github('ABbiodiversity/wildRtrax@development')
+```
+
+---
+
+class: inverse, center, middle
+name: preprocess
+
+# Pre-Process Acoustic Data 
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1100px&gt;&lt;/html&gt;
 
 ---
 
@@ -209,10 +220,10 @@ Interested in recent fixes? Download the development branch instead:
 # Load the package
 library(wildRtrax)
 
-# Plan futures
+# Plan futures for parellel processing
 plan(strategy = multisession)
 
-# Scan data
+# Use the `wt_audio_scanner()` function to scan data
 files &lt;- wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T)
 ```
 
@@ -226,34 +237,29 @@ files &lt;- wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T)
 files &lt;- wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T)
 ```
 
+
+```r
+files
+```
 
 ```
 ## # A tibble: 1,166 × 13
-##    file_path     size_Mb file_name location recording_date_time file_type julian
-##    &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;      &lt;dbl&gt;
-##  1 /volumes/bud…    4.36 339-NW_2… 339-NW   2022-11-17 15:28:51 wav          321
-##  2 /volumes/bud…  106.   339-NW_2… 339-NW   2023-03-01 00:00:00 wav           60
-##  3 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 02:00:00 wav           60
-##  4 /volumes/bud…  106.   339-NW_2… 339-NW   2023-03-01 09:00:00 wav           60
-##  5 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 10:30:00 wav           60
-##  6 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 12:00:00 wav           60
-##  7 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 15:00:00 wav           60
-##  8 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 18:16:00 wav           60
-##  9 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 20:16:00 wav           60
-## 10 /volumes/bud…  106.   339-NW_2… 339-NW   2023-03-02 00:00:00 wav           61
+##    file_path    size_Mb file_name location recording_date_time file_type
+##    &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;    
+##  1 /volumes/bu…    4.36 339-NW_2… 339-NW   2022-11-17 15:28:51 wav      
+##  2 /volumes/bu…  106.   339-NW_2… 339-NW   2023-03-01 00:00:00 wav      
+##  3 /volumes/bu…   31.8  339-NW_2… 339-NW   2023-03-01 02:00:00 wav      
+##  4 /volumes/bu…  106.   339-NW_2… 339-NW   2023-03-01 09:00:00 wav      
+##  5 /volumes/bu…   31.8  339-NW_2… 339-NW   2023-03-01 10:30:00 wav      
+##  6 /volumes/bu…   31.8  339-NW_2… 339-NW   2023-03-01 12:00:00 wav      
+##  7 /volumes/bu…   31.8  339-NW_2… 339-NW   2023-03-01 15:00:00 wav      
+##  8 /volumes/bu…   31.8  339-NW_2… 339-NW   2023-03-01 18:16:00 wav      
+##  9 /volumes/bu…   31.8  339-NW_2… 339-NW   2023-03-01 20:16:00 wav      
+## 10 /volumes/bu…  106.   339-NW_2… 339-NW   2023-03-02 00:00:00 wav      
 ## # ℹ 1,156 more rows
-## # ℹ 6 more variables: year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;, time_index &lt;int&gt;,
-## #   length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;, n_channels &lt;dbl&gt;
-```
-
----
-
-# Scanning acoustic data
-
-
-```r
-files %&gt;%
-  names()
+## # ℹ 7 more variables: julian &lt;dbl&gt;, year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;,
+## #   time_index &lt;int&gt;, length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;,
+## #   n_channels &lt;dbl&gt;
 ```
 
 ---
@@ -274,58 +280,23 @@ files %&gt;%
 ## [13] "n_channels"
 ```
 
-- `location` (where the recording was taken)
-- `recording_date_time` (when the recording was taken)
-
----
-
-# Scanning acoustic data
-
-
-```r
-files %&gt;%
-  names()
-```
-
-```
-##  [1] "file_path"           "size_Mb"             "file_name"          
-##  [4] "location"            "recording_date_time" "file_type"          
-##  [7] "julian"              "year"                "gps_enabled"        
-## [10] "time_index"          "length_seconds"      "sample_rate"        
-## [13] "n_channels"
-```
+--
 
 - `location` (where the recording was taken)
 - `recording_date_time` (when the recording was taken)
+
+--
 
 **`339-NW_20230528_071000.wav`**
 
----
-
-# Scanning acoustic data
-
-
-```r
-files %&gt;%
-  names()
-```
-
-```
-##  [1] "file_path"           "size_Mb"             "file_name"          
-##  [4] "location"            "recording_date_time" "file_type"          
-##  [7] "julian"              "year"                "gps_enabled"        
-## [10] "time_index"          "length_seconds"      "sample_rate"        
-## [13] "n_channels"
-```
-
-- `location` (where the recording was taken)
-- `recording_date_time` (when the recording was taken)
-
-**`339-NW_20230528_071000.wav`**
+--
 
 You can also add arguments `extra_cols` (sample_rate, length_seconds, n_channels) or `tz` if you want to assign a timezone to the recordings.
 
-`wt_audio_scanner(path = '.', file_type = 'wav', extra_cols = T, tz = 'US/Mountain')`
+
+```r
+wt_audio_scanner(path = '.', file_type = 'wav', extra_cols = T, tz = 'US/Mountain')
+```
 
 ---
 
@@ -340,64 +311,30 @@ files %&gt;%
 ```
 
 ---
-
-# Filtering files
-
-
-```r
-files %&gt;%
-  mutate(hour = lubridate::hour(recording_date_time)) %&gt;%
-  filter(julian %in% c(140:150),
-         hour %in% c(4:8))
-```
-
-```
-## # A tibble: 22 × 14
-##    file_path     size_Mb file_name location recording_date_time file_type julian
-##    &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;      &lt;dbl&gt;
-##  1 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-20 05:57:00 wav          140
-##  2 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-20 07:27:00 wav          140
-##  3 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-21 05:55:00 wav          141
-##  4 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-21 07:25:00 wav          141
-##  5 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-22 05:54:00 wav          142
-##  6 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-22 07:24:00 wav          142
-##  7 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-23 05:53:00 wav          143
-##  8 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-23 07:23:00 wav          143
-##  9 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-24 05:51:00 wav          144
-## 10 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-24 07:21:00 wav          144
-## # ℹ 12 more rows
-## # ℹ 7 more variables: year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;, time_index &lt;int&gt;,
-## #   length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;, n_channels &lt;dbl&gt;, hour &lt;int&gt;
-```
-
----
-
 class: my-one-page-font
 
 # Generating acoustic indices and LDFCs
 
+### Running the [QUT Ecoacoustics Analysis Program](https://ap.qut.ecoacoustics.info/) on your audio files
+
+.left-code[
 
 ```r
 # Use the files tibble to execute AP on them
-wt_run_ap(x = files, output_dir = 'ap_outputs', path_to_ap = '/where/you/store/AP')
-```
+wt_run_ap(x = files, 
+          output_dir = 'ap_outputs', 
+          path_to_ap = '/where/you/store/AP')
 
----
-
-# Generating acoustic indices and LDFCs
-
-
-```r
-# Use the files tibble to execute AP on them
-wt_run_ap(x = files, output_dir = 'ap_outputs', path_to_ap = '/where/you/store/AP')
-
-results &lt;- wt_glean_ap(files, input_dir = ".../ap_outputs", purpose = "biotic")
+results &lt;- wt_glean_ap(files, 
+                       input_dir = ".../ap_outputs", 
+                       purpose = "biotic")
 
 # The indices
 results[[2]]
 ```
+]
 
-&lt;img src="339-nw-indices.png", width="50%;"&gt;
+&lt;img src="339-nw-indices.png", width="50%;" align="right"&gt;
 
 ---
 
@@ -428,19 +365,7 @@ wt_glean_ap(files %&gt;%
             input_dir = "../ap_outputs", purpose = "biotic")
 ```
 
----
-
-# Acoustic indices and LDFCs
-
-## Manipulating the results
-
-
-```r
-wt_glean_ap(files %&gt;%
-              mutate(hour = lubridate::hour(recording_date_time)) %&gt;%
-              filter(hour %in% c(0:3,21:23)), 
-            input_dir = "../ap_outputs", purpose = "biotic")
-```
+--
 
 &lt;img src="339-nw-noctural.png"&gt;
 
@@ -450,11 +375,12 @@ wt_glean_ap(files %&gt;%
 
 ## Upload recordings and generate tasks simulatenously
 
-+ Go to a Project and select Manage &gt; Upload Recordings to Project
+&gt; Go to a Project and select **Manage** &gt; **Upload Recordings to Project**
 
 
 ```r
 # Choose recordings for the ABMI Stratified Design for Ecosystem Health
+
 tasks &lt;- files %&gt;%
   inner_join(abmi_blocks, by = c("julian" = "julian", "time_index" = "time_index")) %&gt;%
   drop_na(blocks) %&gt;%
@@ -470,8 +396,9 @@ tasks &lt;- files %&gt;%
 
 ## Upload recordings and create tasks later
 
-+ Go to the Organization &gt; Recordings &gt; Manage &gt; Upload Recordings and create tasks later using `wt_make_aru_tasks()`
+&gt; Go to the Organization &gt; Recordings &gt; Manage &gt; Upload Recordings and create tasks later using `wt_make_aru_tasks()`
 
+&lt;br&gt;
 
 ```r
 my_tasks &lt;- wt_make_aru_tasks(
@@ -513,9 +440,10 @@ wt_songscope_tags(
 
 ```r
 # Generate a tag csv to upload to WildTrax 
-wt_kaleidoscope_tags(input = "kaleidoscope_output.txt",
-                     output = "my_bat_tags.csv"
-                     freq_bump = 20000)
+wt_kaleidoscope_tags(
+  input = "kaleidoscope_output.txt",
+  output = "my_bat_tags.csv",
+  freq_bump = 20000)
 ```
 
 ]
@@ -529,20 +457,31 @@ wt_kaleidoscope_tags(input = "kaleidoscope_output.txt",
 
 ---
 
-class: center, middle
+# Handing it off to Marcus!
 
-## Handing it off to Marcus!
+&lt;div align="center"&gt;
+&lt;img src="handingitoff.jpg" width="500"&gt; 
+&lt;/div&gt;
 
-&lt;img src="handingitoff.jpg" width=40% align=middle&gt;
+---
+
+class: inverse, center, middle
+name: download
+
+# Downloading Data 
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1100px&gt;&lt;/html&gt;
+
 ---
 
 # Authenticating into WildTrax
 
+### First we need to set up our username and password as **environment variables**.
+
+### Note: These need to be called `WT_USERNAME` and `WT_PASSWORD`, respectively. 
+
 
 ```r
-# First we need to set up our username/pass as environment variables
-# Note: Need to be `WT_USERNAME` and `WT_PASSWORD`. 
-
 Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
 ```
 
@@ -552,9 +491,10 @@ These values live only on your device. But **be careful** about including sensit
 
 --
 
+One solution - save a login script file locally&lt;sup&gt;1&lt;/sup&gt;:
+
 
 ```r
-# One solution - save a login script file locally
 credentials &lt;- "Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')"
 writeLines(credentials, "login.R")
 
@@ -562,24 +502,9 @@ writeLines(credentials, "login.R")
 source("login.R")
 ```
 
----
-
-# Authenticating into WildTrax
-
-
-```r
-# Second solution - the `keyring` package.
-
-library(keyring)
-
-keyring_create("wildtrax")
-key_set("WT_USERNAME", keyring = "wildtrax")
-key_set("WT_PASSWORD", keyring = "wildtrax")
-
-# This is now safe for my script!
-Sys.setenv(WT_USERNAME = key_get("WT_USERNAME", keyring = "wildtrax"),
-           WT_PASSWORD = key_get("WT_PASSWORD", keyring = "wildtrax"))
-```
+--
+.footnote[
+&lt;sup&gt;1&lt;/sup&gt; You can also use the `keyring` package for secure storage of your credentials locally.]
 
 ---
 
@@ -590,10 +515,6 @@ Sys.setenv(WT_USERNAME = key_get("WT_USERNAME", keyring = "wildtrax"),
 # Now, all you need to do is run one function. With no arguments!!!
 
 *wt_auth()
-```
-
-```
-## Authentication into WildTrax successful.
 ```
 
 ---
@@ -632,7 +553,7 @@ wt_auth()
 ```
 
 ```
-## [1] "2023-10-24 05:24:25 MDT"
+## [1] "2023-10-24 19:37:09 MDT"
 ```
 
 ---
@@ -651,22 +572,27 @@ wt_auth()
 my_projects &lt;- wt_get_download_summary( 
   sensor_id = "CAM"
 )
+```
 
-# Print
+
+
+
+```r
 glimpse(my_projects, width = 75)
 ```
 
 ```
-## Rows: 364
+## Rows: 46
 ## Columns: 7
-## $ organization_id &lt;int&gt; 5203, 5164, 5277, 5417, 5257, 5277, 5440, 5257, 5…
-## $ organization    &lt;chr&gt; "OMNRF", "CENOVUS", "TOO", "BCCF", "IMPERIAL", "T…
-## $ project         &lt;chr&gt; "2018-2019 HBL Fox Den Camera Test", "2019 – 2021…
-## $ project_id      &lt;int&gt; 461, 1043, 528, 1324, 1164, 1106, 1518, 1163, 140…
+## $ organization_id &lt;int&gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5…
+## $ organization    &lt;chr&gt; "ABMI", "ABMI", "ABMI", "ABMI", "ABMI", "ABMI", "…
+## $ project         &lt;chr&gt; "ABMI Adopt-a-Camera 2017", "ABMI Amphibian Monit…
+## $ project_id      &lt;int&gt; 589, 391, 797, 800, 847, 979, 1102, 794, 205, 194…
 ## $ sensor          &lt;chr&gt; "CAM", "CAM", "CAM", "CAM", "CAM", "CAM", "CAM", …
-## $ tasks           &lt;int&gt; 2, 73, 8, 13, 29, 5, 1, 19, 108, 1, 29, 21, 13, 8…
-## $ status          &lt;chr&gt; "Active", "Active", "Active", "Active", "Active",…
+## $ tasks           &lt;int&gt; 83, 19, 7, 14, 16, 19, 14, 23, 22, 552, 624, 723,…
+## $ status          &lt;chr&gt; "Published - Map+Report Only", "Published - Map+R…
 ```
+
 
 ---
 
@@ -821,6 +747,38 @@ model_comp_raw %&gt;% select(1:15) %&gt;% glimpse(width = 75)
 
 ---
 
+# Available report types
+
+.pull-left[
+## Camera:
+
+1. main
+1. location
+1. tag
+1. image_report
+1. image_set
+1. project
+1. megadetector
+1. megaclassifier
+]
+
+.pull-right[
+## ARU:
+
+1. main
+1. location
+1. tag
+1. recording
+1. project
+1. birdnet
+]
+
+&lt;br&gt;
+
+### All definitions are available from the [WildTrax guide](https://wildtrax.ca/resources/user-guide/#data-download-and-data-discover).
+
+---
+
 # So what?
 
 "You've made a slightly slicker version of `read.csv()`. Big deal."
@@ -836,7 +794,7 @@ Well, there are benefits to scripting:
 + Reproducibility! 
 + Storage schmorage. 
 
---
+---
 
 # Transform our camera data
 
@@ -849,7 +807,7 @@ One common task: evaluating **independent detections**.
 --
 
 + There's a function in wildRtrax for that: [`wt_ind_detect()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_ind_det.R).
-+ It's designed to work with the output (i.e. raw data) from [`wt_download_report()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_summarise_cam.R).
++ It's designed to work with the output (i.e. "main" report) from [`wt_download_report()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_summarise_cam.R).
 + You specify the detection threshold. 
 
 --
@@ -878,17 +836,11 @@ count:false
 
 Most of the time, there are additional steps we want to take to transform our data into something more insightful or useful - for, say, modeling.
 
-
-
 One common task: evaluating **independent detections**.
 
-
-
 + There's a function in wildRtrax for that: [`wt_ind_detect()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_ind_det.R).
-+ It's designed to work with the output (i.e. raw data) from [`wt_download_report()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_summarise_cam.R).
++ It's designed to work with the output (i.e. "main" report) from [`wt_download_report()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_summarise_cam.R).
 + You specify the detection threshold. 
-
-
 
 
 ```r
@@ -910,17 +862,11 @@ count:false
 
 Most of the time, there are additional steps we want to take to transform our data into something more insightful or useful - for, say, modeling.
 
-
-
 One common task: evaluating **independent detections**.
 
-
-
 + There's a function in wildRtrax for that: [`wt_ind_detect()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_ind_det.R).
-+ It's designed to work with the output (i.e. raw data) from [`wt_download_report()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_summarise_cam.R).
++ It's designed to work with the output (i.e. "main" report) from [`wt_download_report()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_summarise_cam.R).
 + You specify the detection threshold. 
-
-
 
 
 ```r
@@ -942,17 +888,11 @@ count:false
 
 Most of the time, there are additional steps we want to take to transform our data into something more insightful or useful - for, say, modeling.
 
-
-
 One common task: evaluating **independent detections**.
 
-
-
 + There's a function in wildRtrax for that: [`wt_ind_detect()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_ind_det.R).
-+ It's designed to work with the output (i.e. raw data) from [`wt_download_report()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_summarise_cam.R).
++ It's designed to work with the output (i.e. "main" report) from [`wt_download_report()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_summarise_cam.R).
 + You specify the detection threshold. 
-
-
 
 
 ```r
@@ -993,7 +933,7 @@ eh14_detections &lt;- wt_ind_detect(
 
 --
 
-**307** independent detections in this dataset, when using a threshld of 30 minutes.
+**313** independent detections in this dataset, when using a threshld of 30 minutes.
 
 ---
 
@@ -1166,9 +1106,6 @@ eh14_summarised &lt;- wt_summarise_cam(
 * output_format = "wide"
 )
 ```
---
-
-### Let's go interactive to really explore all these options.
 
 ---
 
