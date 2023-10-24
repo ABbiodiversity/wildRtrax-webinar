@@ -4,7 +4,7 @@
     <title>wildRtrax</title>
     <meta charset="utf-8" />
     <meta name="author" content="Marcus Becker, Alex MacPhail, Elly Knight" />
-    <meta name="date" content="2023-10-19" />
+    <meta name="date" content="2023-10-23" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
@@ -24,7 +24,7 @@ class: center, middle, inverse, title-slide
 ### Marcus Becker, Alex MacPhail, Elly Knight
 ]
 .date[
-### 2023-10-19
+### 2023-10-23
 ]
 
 ---
@@ -93,6 +93,25 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 
 - We assume you're using an *environmental sensor* such as an **autonomous recording unit (ARU)** or **remote camera**
 
+  
+---
+
+# Preface
+
+- We assume you're using an *environmental sensor* such as an **autonomous recording unit (ARU)** or **remote camera**
+
+
+- We assume you know *WildTrax*
+
+  - A web-enabled portal designed to manage, store, process, share and discover environmental sensor data, developed by the ABMI
+
+  
+---
+
+# Preface
+
+- We assume you're using an *environmental sensor* such as an **autonomous recording unit (ARU)** or **remote camera**
+
 
 - We assume you know *WildTrax*
 
@@ -103,6 +122,16 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 
   - A programming language mainly used for statistical computing and data analysis
   
+---
+
+# wildRtrax
+
+## What is `wildRtrax`
+
+- An R package for ecologists and advanced users who work with environmental sensors
+  
+- Contains functions designed to meet most needs in order to organize, analyze and standardize data with the WildTrax infrastructure
+
 ---
 
 # wildRtrax
@@ -125,6 +154,12 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 
 - Us
 
+---
+
+## Who is `wildRtrax`?
+
+- Us
+
 - And YOU! (you'll learn how to make a pull request soon)
 
 ---
@@ -138,8 +173,20 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 - Contributing to package and submitting issues
 
 ---
+class: center, middle
+
+&lt;img src="drakehalf.png" style="width:60%;" align="center"&gt;
+
+---
+class: center, middle
 
 &lt;img src="drake.png" style="width:60%;" align="center"&gt;
+
+---
+
+# Installing the package
+
+`remotes::install_github('ABbiodiversity/wildRtrax')`
 
 ---
 
@@ -152,8 +199,6 @@ Interested in recent fixes? Download the development branch instead:
 `remotes::install_github('ABbiodiversity/wildRtrax@development')`
 
 ---
-
-class: my-one-page-font
 
 # Scanning acoustic data
 
@@ -171,25 +216,34 @@ plan(strategy = multisession)
 files &lt;- wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T)
 ```
 
+---
+
+# Scanning acoustic data
+
+
+```r
+# Scan data
+files &lt;- wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T)
+```
+
 
 ```
 ## # A tibble: 1,166 × 13
-##    file_path size_Mb file_name location recording_date_time file_type
-##    &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;    
-##  1 /volumes…    4.36 339-NW_2… 339-NW   2022-11-17 15:28:51 wav      
-##  2 /volumes…  106.   339-NW_2… 339-NW   2023-03-01 00:00:00 wav      
-##  3 /volumes…   31.8  339-NW_2… 339-NW   2023-03-01 02:00:00 wav      
-##  4 /volumes…  106.   339-NW_2… 339-NW   2023-03-01 09:00:00 wav      
-##  5 /volumes…   31.8  339-NW_2… 339-NW   2023-03-01 10:30:00 wav      
-##  6 /volumes…   31.8  339-NW_2… 339-NW   2023-03-01 12:00:00 wav      
-##  7 /volumes…   31.8  339-NW_2… 339-NW   2023-03-01 15:00:00 wav      
-##  8 /volumes…   31.8  339-NW_2… 339-NW   2023-03-01 18:16:00 wav      
-##  9 /volumes…   31.8  339-NW_2… 339-NW   2023-03-01 20:16:00 wav      
-## 10 /volumes…  106.   339-NW_2… 339-NW   2023-03-02 00:00:00 wav      
+##    file_path     size_Mb file_name location recording_date_time file_type julian
+##    &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;      &lt;dbl&gt;
+##  1 /volumes/bud…    4.36 339-NW_2… 339-NW   2022-11-17 15:28:51 wav          321
+##  2 /volumes/bud…  106.   339-NW_2… 339-NW   2023-03-01 00:00:00 wav           60
+##  3 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 02:00:00 wav           60
+##  4 /volumes/bud…  106.   339-NW_2… 339-NW   2023-03-01 09:00:00 wav           60
+##  5 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 10:30:00 wav           60
+##  6 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 12:00:00 wav           60
+##  7 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 15:00:00 wav           60
+##  8 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 18:16:00 wav           60
+##  9 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 20:16:00 wav           60
+## 10 /volumes/bud…  106.   339-NW_2… 339-NW   2023-03-02 00:00:00 wav           61
 ## # ℹ 1,156 more rows
-## # ℹ 7 more variables: julian &lt;dbl&gt;, year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;,
-## #   time_index &lt;int&gt;, length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;,
-## #   n_channels &lt;dbl&gt;
+## # ℹ 6 more variables: year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;, time_index &lt;int&gt;,
+## #   length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;, n_channels &lt;dbl&gt;
 ```
 
 ---
@@ -198,17 +252,69 @@ files &lt;- wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T)
 
 
 ```r
-files |&gt;
+files %&gt;%
+  names()
+```
+
+---
+
+# Scanning acoustic data
+
+
+```r
+files %&gt;%
   names()
 ```
 
 ```
-##  [1] "file_path"           "size_Mb"            
-##  [3] "file_name"           "location"           
-##  [5] "recording_date_time" "file_type"          
-##  [7] "julian"              "year"               
-##  [9] "gps_enabled"         "time_index"         
-## [11] "length_seconds"      "sample_rate"        
+##  [1] "file_path"           "size_Mb"             "file_name"          
+##  [4] "location"            "recording_date_time" "file_type"          
+##  [7] "julian"              "year"                "gps_enabled"        
+## [10] "time_index"          "length_seconds"      "sample_rate"        
+## [13] "n_channels"
+```
+
+- `location` (where the recording was taken)
+- `recording_date_time` (when the recording was taken)
+
+---
+
+# Scanning acoustic data
+
+
+```r
+files %&gt;%
+  names()
+```
+
+```
+##  [1] "file_path"           "size_Mb"             "file_name"          
+##  [4] "location"            "recording_date_time" "file_type"          
+##  [7] "julian"              "year"                "gps_enabled"        
+## [10] "time_index"          "length_seconds"      "sample_rate"        
+## [13] "n_channels"
+```
+
+- `location` (where the recording was taken)
+- `recording_date_time` (when the recording was taken)
+
+**`339-NW_20230528_071000.wav`**
+
+---
+
+# Scanning acoustic data
+
+
+```r
+files %&gt;%
+  names()
+```
+
+```
+##  [1] "file_path"           "size_Mb"             "file_name"          
+##  [4] "location"            "recording_date_time" "file_type"          
+##  [7] "julian"              "year"                "gps_enabled"        
+## [10] "time_index"          "length_seconds"      "sample_rate"        
 ## [13] "n_channels"
 ```
 
@@ -227,35 +333,56 @@ You can also add arguments `extra_cols` (sample_rate, length_seconds, n_channels
 
 
 ```r
-files |&gt;
-  mutate(hour = lubridate::hour(recording_date_time)) |&gt;
+files %&gt;%
+  mutate(hour = lubridate::hour(recording_date_time)) %&gt;%
+  filter(julian %in% c(140:150),
+         hour %in% c(4:8))
+```
+
+---
+
+# Filtering files
+
+
+```r
+files %&gt;%
+  mutate(hour = lubridate::hour(recording_date_time)) %&gt;%
   filter(julian %in% c(140:150),
          hour %in% c(4:8))
 ```
 
 ```
 ## # A tibble: 22 × 14
-##    file_path size_Mb file_name location recording_date_time file_type
-##    &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;    
-##  1 /volumes…   106.  339-NW_2… 339-NW   2023-05-20 05:57:00 wav      
-##  2 /volumes…    31.8 339-NW_2… 339-NW   2023-05-20 07:27:00 wav      
-##  3 /volumes…   106.  339-NW_2… 339-NW   2023-05-21 05:55:00 wav      
-##  4 /volumes…    31.8 339-NW_2… 339-NW   2023-05-21 07:25:00 wav      
-##  5 /volumes…   106.  339-NW_2… 339-NW   2023-05-22 05:54:00 wav      
-##  6 /volumes…    31.8 339-NW_2… 339-NW   2023-05-22 07:24:00 wav      
-##  7 /volumes…   106.  339-NW_2… 339-NW   2023-05-23 05:53:00 wav      
-##  8 /volumes…    31.8 339-NW_2… 339-NW   2023-05-23 07:23:00 wav      
-##  9 /volumes…   106.  339-NW_2… 339-NW   2023-05-24 05:51:00 wav      
-## 10 /volumes…    31.8 339-NW_2… 339-NW   2023-05-24 07:21:00 wav      
+##    file_path     size_Mb file_name location recording_date_time file_type julian
+##    &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;      &lt;dbl&gt;
+##  1 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-20 05:57:00 wav          140
+##  2 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-20 07:27:00 wav          140
+##  3 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-21 05:55:00 wav          141
+##  4 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-21 07:25:00 wav          141
+##  5 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-22 05:54:00 wav          142
+##  6 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-22 07:24:00 wav          142
+##  7 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-23 05:53:00 wav          143
+##  8 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-23 07:23:00 wav          143
+##  9 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-24 05:51:00 wav          144
+## 10 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-24 07:21:00 wav          144
 ## # ℹ 12 more rows
-## # ℹ 8 more variables: julian &lt;dbl&gt;, year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;,
-## #   time_index &lt;int&gt;, length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;,
-## #   n_channels &lt;dbl&gt;, hour &lt;int&gt;
+## # ℹ 7 more variables: year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;, time_index &lt;int&gt;,
+## #   length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;, n_channels &lt;dbl&gt;, hour &lt;int&gt;
 ```
 
 ---
 
 class: my-one-page-font
+
+# Generating acoustic indices and LDFCs
+
+
+```r
+# Use the files tibble to execute AP on them
+wt_run_ap(x = files, output_dir = 'ap_outputs', path_to_ap = '/where/you/store/AP')
+```
+
+---
 
 # Generating acoustic indices and LDFCs
 
@@ -274,7 +401,7 @@ results[[2]]
 
 ---
 
-# LDFCs
+# Acoustic indices and LDFCs
 
 ## Long-duration false-colour spectrogram
 
@@ -289,7 +416,21 @@ results[[3]]
 
 ---
 
-# LDFCs
+# Acoustic indices and LDFCs
+
+## Manipulating the results
+
+
+```r
+wt_glean_ap(files %&gt;%
+              mutate(hour = lubridate::hour(recording_date_time)) %&gt;%
+              filter(hour %in% c(0:3,21:23)), 
+            input_dir = "../ap_outputs", purpose = "biotic")
+```
+
+---
+
+# Acoustic indices and LDFCs
 
 ## Manipulating the results
 
@@ -314,12 +455,12 @@ wt_glean_ap(files %&gt;%
 
 ```r
 # Choose recordings for the ABMI Stratified Design for Ecosystem Health
-tasks &lt;- files |&gt;
-  inner_join(abmi_blocks, by = c("julian" = "julian", "time_index" = "time_index")) |&gt;
-  drop_na(blocks) |&gt;
-  group_by(location, blocks) |&gt;
-  sample_n(1, replace = F) |&gt;
-  ungroup() |&gt;
+tasks &lt;- files %&gt;%
+  inner_join(abmi_blocks, by = c("julian" = "julian", "time_index" = "time_index")) %&gt;%
+  drop_na(blocks) %&gt;%
+  group_by(location, blocks) %&gt;%
+  sample_n(1, replace = F) %&gt;%
+  ungroup() %&gt;%
   map(.x = .$file_path, .f = ~file.copy(.x, to = "/my/selected/files"))
 ```
 
@@ -334,21 +475,18 @@ tasks &lt;- files |&gt;
 
 ```r
 my_tasks &lt;- wt_make_aru_tasks(
-  tasks %&gt;% 
-    select(-c(blocks:recs)),
+  tasks,
   output = NULL,
   task_method = "1SPT",
   task_length = 180
 )
-
-my_tasks
 ```
 
 ---
 
 # Creating tasks and tags
 
-.left-column[
+.pull-left[
 
 ## From Songscope
 
@@ -368,7 +506,7 @@ wt_songscope_tags(
 ```
 ]
 
-.right-column[
+.pull-right[
 
 ## From Kaleidoscope
 
@@ -391,9 +529,11 @@ wt_kaleidoscope_tags(input = "kaleidoscope_output.txt",
 
 ---
 
+class: center, middle
+
 ## Handing it off to Marcus!
 
-&lt;img src="handingitoff.jpg" width=30% align=middle&gt;
+&lt;img src="handingitoff.jpg" width=40% align=middle&gt;
 ---
 
 # Authenticating into WildTrax
@@ -452,6 +592,10 @@ Sys.setenv(WT_USERNAME = key_get("WT_USERNAME", keyring = "wildtrax"),
 *wt_auth()
 ```
 
+```
+## Authentication into WildTrax successful.
+```
+
 ---
 count:false
 
@@ -476,19 +620,19 @@ wt_auth()
 ```
 
 ```
-##  chr [1:4] "expires_in" "expiry_time" "access_token" ...
+##  chr [1:4] "expires_in" "expiry_time" "access_token" "token_type"
 ```
 
 --
 
 
 ```r
-# For example, your token expires after 8 hours. Check it's expiry time:
+# For example, your token expires after 12 hours. Check it's expiry time:
 *wildRtrax:::._wt_auth_env_$expiry_time
 ```
 
 ```
-## [1] "2023-10-19 22:31:28 MDT"
+## [1] "2023-10-24 05:24:25 MDT"
 ```
 
 ---
@@ -513,7 +657,7 @@ glimpse(my_projects, width = 75)
 ```
 
 ```
-## Rows: 359
+## Rows: 364
 ## Columns: 7
 ## $ organization_id &lt;int&gt; 5203, 5164, 5277, 5417, 5257, 5277, 5440, 5257, 5…
 ## $ organization    &lt;chr&gt; "OMNRF", "CENOVUS", "TOO", "BCCF", "IMPERIAL", "T…
@@ -539,9 +683,9 @@ You need to supply the `project_id` value, which we can get from **[`wt_get_down
 # Let's say we're interested in the ABMI's Ecosystem Health project from 2014
 
 # Obtain the project_id value
-wt_get_download_summary(sensor_id = "CAM") |&gt;
-  filter(project == "ABMI Ecosystem Health 2014") |&gt;
-  select(project_id) |&gt;
+wt_get_download_summary(sensor_id = "CAM") %&gt;%
+  filter(project == "ABMI Ecosystem Health 2014") %&gt;%
+  select(project_id) %&gt;%
   pull()
 ```
 
@@ -575,7 +719,7 @@ eh14_raw &lt;- wt_download_report(
 
 
 ```r
-*eh14_raw |&gt; select(1:15) |&gt; glimpse(width = 75)
+*eh14_raw %&gt;% select(1:15) %&gt;% glimpse(width = 75)
 ```
 
 ```
@@ -609,9 +753,9 @@ That's easy too!
 # This time, we want ABMI's Camera Model Comparison projects, from
 # three separate years. 
 
-model_comp_ids &lt;- wt_get_download_summary(sensor_id = "CAM") |&gt; 
-* filter(str_detect(project, "Camera Model Comparison")) |&gt;
-  select(project_id) |&gt;
+model_comp_ids &lt;- wt_get_download_summary(sensor_id = "CAM") %&gt;% 
+* filter(str_detect(project, "Camera Model Comparison")) %&gt;%
+  select(project_id) %&gt;%
   pull() 
 
 # The object model_comp_ids is a numeric vector
@@ -1023,11 +1167,12 @@ eh14_summarised &lt;- wt_summarise_cam(
 )
 ```
 --
+
 ### Let's go interactive to really explore all these options.
 
 ---
 
-# The ulimate pipeline
+# The ultimate pipeline
 
 
 ```r

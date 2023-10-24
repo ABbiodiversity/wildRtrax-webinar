@@ -101,6 +101,25 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 
 - We assume you're using an *environmental sensor* such as an **autonomous recording unit (ARU)** or **remote camera**
 
+  
+---
+
+# Preface
+
+- We assume you're using an *environmental sensor* such as an **autonomous recording unit (ARU)** or **remote camera**
+
+
+- We assume you know *WildTrax*
+
+  - A web-enabled portal designed to manage, store, process, share and discover environmental sensor data, developed by the ABMI
+
+  
+---
+
+# Preface
+
+- We assume you're using an *environmental sensor* such as an **autonomous recording unit (ARU)** or **remote camera**
+
 
 - We assume you know *WildTrax*
 
@@ -111,6 +130,16 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 
   - A programming language mainly used for statistical computing and data analysis
   
+---
+
+# wildRtrax
+
+## What is `wildRtrax`
+
+- An R package for ecologists and advanced users who work with environmental sensors
+  
+- Contains functions designed to meet most needs in order to organize, analyze and standardize data with the WildTrax infrastructure
+
 ---
 
 # wildRtrax
@@ -133,6 +162,12 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 
 - Us
 
+---
+
+## Who is `wildRtrax`?
+
+- Us
+
 - And YOU! (you'll learn how to make a pull request soon)
 
 ---
@@ -146,8 +181,20 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol {
 - Contributing to package and submitting issues
 
 ---
+class: center, middle
+
+<img src="drakehalf.png" style="width:60%;" align="center">
+
+---
+class: center, middle
 
 <img src="drake.png" style="width:60%;" align="center">
+
+---
+
+# Installing the package
+
+`remotes::install_github('ABbiodiversity/wildRtrax')`
 
 ---
 
@@ -160,8 +207,6 @@ Interested in recent fixes? Download the development branch instead:
 `remotes::install_github('ABbiodiversity/wildRtrax@development')`
 
 ---
-
-class: my-one-page-font
 
 # Scanning acoustic data
 
@@ -181,6 +226,15 @@ plan(strategy = multisession)
 files <- wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T)
 ```
 
+---
+
+# Scanning acoustic data
+
+```{r, echo=T, eval=F, warning=F, message=F}
+# Scan data
+files <- wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T)
+```
+
 ```{r, echo=F, eval=T}
 files
 
@@ -190,8 +244,46 @@ files
 
 # Scanning acoustic data
 
+```{r, eval=F, echo=T}
+files %>%
+  names()
+
+```
+
+---
+
+# Scanning acoustic data
+
 ```{r}
-files |>
+files %>%
+  names()
+
+```
+
+- `location` (where the recording was taken)
+- `recording_date_time` (when the recording was taken)
+
+---
+
+# Scanning acoustic data
+
+```{r}
+files %>%
+  names()
+
+```
+
+- `location` (where the recording was taken)
+- `recording_date_time` (when the recording was taken)
+
+**`339-NW_20230528_071000.wav`**
+
+---
+
+# Scanning acoustic data
+
+```{r}
+files %>%
   names()
 
 ```
@@ -209,9 +301,21 @@ You can also add arguments `extra_cols` (sample_rate, length_seconds, n_channels
 
 # Filtering files
 
+```{r, echo=T, eval=F, message=F, warning=F}
+files %>%
+  mutate(hour = lubridate::hour(recording_date_time)) %>%
+  filter(julian %in% c(140:150),
+         hour %in% c(4:8))
+
+```
+
+---
+
+# Filtering files
+
 ```{r, echo=T, eval=T, message=F, warning=F}
-files |>
-  mutate(hour = lubridate::hour(recording_date_time)) |>
+files %>%
+  mutate(hour = lubridate::hour(recording_date_time)) %>%
   filter(julian %in% c(140:150),
          hour %in% c(4:8))
 
@@ -220,6 +324,16 @@ files |>
 ---
 
 class: my-one-page-font
+
+# Generating acoustic indices and LDFCs
+
+```{r, echo=T, eval=F, warning=F, message=F}
+# Use the files tibble to execute AP on them
+wt_run_ap(x = files, output_dir = 'ap_outputs', path_to_ap = '/where/you/store/AP')
+
+```
+
+---
 
 # Generating acoustic indices and LDFCs
 
@@ -238,7 +352,7 @@ results[[2]]
 
 ---
 
-# LDFCs
+# Acoustic indices and LDFCs
 
 ## Long-duration false-colour spectrogram
 
@@ -252,7 +366,20 @@ results[[3]]
 
 ---
 
-# LDFCs
+# Acoustic indices and LDFCs
+
+## Manipulating the results
+
+```{r, echo=T, eval=F}
+wt_glean_ap(files %>%
+              mutate(hour = lubridate::hour(recording_date_time)) %>%
+              filter(hour %in% c(0:3,21:23)), 
+            input_dir = "../ap_outputs", purpose = "biotic")
+```
+
+---
+
+# Acoustic indices and LDFCs
 
 ## Manipulating the results
 
@@ -275,12 +402,12 @@ wt_glean_ap(files %>%
 
 ```{r, eval=F, echo=T, message=F, warning=F}
 # Choose recordings for the ABMI Stratified Design for Ecosystem Health
-tasks <- files |>
-  inner_join(abmi_blocks, by = c("julian" = "julian", "time_index" = "time_index")) |>
-  drop_na(blocks) |>
-  group_by(location, blocks) |>
-  sample_n(1, replace = F) |>
-  ungroup() |>
+tasks <- files %>%
+  inner_join(abmi_blocks, by = c("julian" = "julian", "time_index" = "time_index")) %>%
+  drop_na(blocks) %>%
+  group_by(location, blocks) %>%
+  sample_n(1, replace = F) %>%
+  ungroup() %>%
   map(.x = .$file_path, .f = ~file.copy(.x, to = "/my/selected/files"))
 ```
 
@@ -294,21 +421,18 @@ tasks <- files |>
 
 ```{r, eval=F, echo=T, message=F, warning=F}
 my_tasks <- wt_make_aru_tasks(
-  tasks %>% 
-    select(-c(blocks:recs)),
+  tasks,
   output = NULL,
   task_method = "1SPT",
   task_length = 180
 )
-
-my_tasks
 ```
 
 ---
 
 # Creating tasks and tags
 
-.left-column[
+.pull-left[
 
 ## From Songscope
 
@@ -328,7 +452,7 @@ wt_songscope_tags(
 ```
 ]
 
-.right-column[
+.pull-right[
 
 ## From Kaleidoscope
 
@@ -351,9 +475,11 @@ wt_kaleidoscope_tags(input = "kaleidoscope_output.txt",
 
 ---
 
+class: center, middle
+
 ## Handing it off to Marcus!
 
-<img src="handingitoff.jpg" width=30% align=middle>
+<img src="handingitoff.jpg" width=40% align=middle>
 ---
 
 # Authenticating into WildTrax
@@ -445,7 +571,7 @@ str(names(wildRtrax:::._wt_auth_env_)) #<<
 
 ```{r, echo=TRUE, eval=TRUE, message=TRUE, include=TRUE}
 
-# For example, your token expires after 8 hours. Check it's expiry time:
+# For example, your token expires after 12 hours. Check it's expiry time:
 wildRtrax:::._wt_auth_env_$expiry_time #<<
 
 ```
@@ -487,9 +613,9 @@ You need to supply the `project_id` value, which we can get from **[`wt_get_down
 # Let's say we're interested in the ABMI's Ecosystem Health project from 2014
 
 # Obtain the project_id value
-wt_get_download_summary(sensor_id = "CAM") |>
-  filter(project == "ABMI Ecosystem Health 2014") |>
-  select(project_id) |>
+wt_get_download_summary(sensor_id = "CAM") %>%
+  filter(project == "ABMI Ecosystem Health 2014") %>%
+  select(project_id) %>%
   pull()
 
 ```
@@ -529,7 +655,7 @@ eh14_raw <- wt_download_report(
 <br>
 
 ```{r}
-eh14_raw |> select(1:15) |> glimpse(width = 75) #<<
+eh14_raw %>% select(1:15) %>% glimpse(width = 75) #<<
 ```
 
 ---
@@ -543,9 +669,9 @@ That's easy too!
 # This time, we want ABMI's Camera Model Comparison projects, from
 # three separate years. 
 
-model_comp_ids <- wt_get_download_summary(sensor_id = "CAM") |> 
-  filter(str_detect(project, "Camera Model Comparison")) |> #<<
-  select(project_id) |>
+model_comp_ids <- wt_get_download_summary(sensor_id = "CAM") %>% 
+  filter(str_detect(project, "Camera Model Comparison")) %>% #<<
+  select(project_id) %>%
   pull() 
 
 # The object model_comp_ids is a numeric vector
@@ -938,11 +1064,12 @@ eh14_summarised <- wt_summarise_cam(
 
 ```
 --
+
 ### Let's go interactive to really explore all these options.
 
 ---
 
-# The ulimate pipeline
+# The ultimate pipeline
 
 ```{r eval=FALSE, echo=TRUE, include=TRUE}
 
