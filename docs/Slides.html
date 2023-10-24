@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>wildRtrax</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Marcus Becker, Alex MacPhail, Elly Knight" />
+    <meta name="date" content="2023-10-24" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# wildRtrax
+]
+.subtitle[
+## An R package for environmental sensor data
+]
+.author[
+### Marcus Becker, Alex MacPhail, Elly Knight
+]
+.date[
+### 2023-10-24
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 40%;
+  height: 92%;
+  float: left;
+}
+.left-code-less {
+  color: #777;
+  width: 90%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 58%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-more {
+  width: 65%;
+  float: right;
+  padding-left: 1%;
+}
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+body, h1, h2, h3, h4, h5, h6, p, ul, ol {
+  font-family: "Agenda", sans-serif; font-size: 20px /* Replace "Agenda" with the actual font name */
+}
+.my-one-page-font {
+  font-size: 18px;
+}
+.text-container {
+            width: 300px; /* Set the width to your desired value in pixels or other units */
+            margin: 0 auto; /* Center the container horizontally */
+        }
+.main-container { width: 1800px; max-width:2800px;}
+.title-slide {
+  background-image: url(hex-logo-pipit.png);
+  background-position: 100% 0%;
+  background-size: 400px;
+  padding-left: 100px;  /* delete this for 4:3 aspect ratio */
+}
+
+&lt;/style&gt;
+
+# Preface
+
+- We assume you're using an *environmental sensor* such as an **autonomous recording unit (ARU)** or **remote camera**
+
+  
+---
+
+# Preface
+
+- We assume you're using an *environmental sensor* such as an **autonomous recording unit (ARU)** or **remote camera**
+
+--
+
+- We assume you know [WildTrax](www.wildtrax.ca)
+
+  - A web-enabled portal designed to manage, store, process, share and discover environmental sensor data, developed by the ABMI
+  
+--
+
+- We assume you know *R*
+
+  - A programming language mainly used for statistical computing and data analysis
+  
+---
+
+# wildRtrax
+
+## What is the `wildRtrax` R package?
+
+- An R package for ecologists and advanced users who work with environmental sensors
+
+- Contains functions designed to meet most needs in order to organize, analyze, and standardize data with the WildTrax infrastructure
+
+--
+
+## Why did you build `wildRtrax`?
+
+- `wildRtrax` has been built in parallel&lt;sup&gt;1&lt;/sup&gt; with WildTrax to provide additional analytics and functionalities
+
+- By outlining a standardized and harmonized procedure for data intake, quality control, processing and verification of environmental sensor data,`wildRtrax` and WildTrax hope to provide open work flows for environmental sensors to help answer biological and ecological questions
+
+---
+
+# wildRtrax
+
+## Who is `wildRtrax`?
+
+- Us
+
+--
+
+- And (hopefully) **YOU**! (we'll show you how to contribute to the package)
+
+---
+
+# Today's Agenda
+
+&lt;br&gt;
+
+### 1. [Installing the package](#install)
+
+### 2. [Pre-processing acoustic data](#preprocess)
+
+### 3. [Downloading data from WildTrax](#download)
+
+### 4. [Wrangling camera and acoustic data for analysis](#wrangle)
+
+### 5. [Contributing to the package and submitting issues](#contribute)
+
+---
+class: center, top
+
+&lt;img src="drakehalf.png" style="width:60%;" align="center"&gt;
+
+---
+class: center, middle
+count: false
+# #goals
+
+&lt;img src="drake.png" style="width:60%;" align="center"&gt;
+
+---
+
+class: inverse, center, middle
+name: install
+
+# Installing wildRtrax 
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1100px&gt;&lt;/html&gt;
+
+---
+
+# Installing wildRtrax
+
+&lt;br&gt;
+### Download directly from Github using the `remotes` package:
+
+
+```r
+remotes::install_github('ABbiodiversity/wildRtrax')
+```
+
+--
+
+### Interested in recent fixes? Download the development branch instead, by including the **@development** tag:
+
+
+```r
+remotes::install_github('ABbiodiversity/wildRtrax@development')
+```
+
+---
+
+class: inverse, center, middle
+name: preprocess
+
+# Pre-Process Acoustic Data 
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1100px&gt;&lt;/html&gt;
+
+---
+
+# Scanning acoustic data
+
+
+
+
+```r
+# Load the package
+library(wildRtrax)
+
+# Plan futures for parellel processing
+plan(strategy = multisession)
+
+# Use the `wt_audio_scanner()` function to scan data
+files &lt;- wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T)
+```
+
+---
+
+# Scanning acoustic data
+
+
+```r
+# Scan data
+files &lt;- wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T)
+```
+
+
+```r
+files
+```
+
+```
+## # A tibble: 1,166 × 13
+##    file_path      size_Mb file_name location recording_date_time file_type
+##    &lt;chr&gt;            &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;    
+##  1 /volumes/buda…    4.36 339-NW_2… 339-NW   2022-11-17 15:28:51 wav      
+##  2 /volumes/buda…  106.   339-NW_2… 339-NW   2023-03-01 00:00:00 wav      
+##  3 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 02:00:00 wav      
+##  4 /volumes/buda…  106.   339-NW_2… 339-NW   2023-03-01 09:00:00 wav      
+##  5 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 10:30:00 wav      
+##  6 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 12:00:00 wav      
+##  7 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 15:00:00 wav      
+##  8 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 18:16:00 wav      
+##  9 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 20:16:00 wav      
+## 10 /volumes/buda…  106.   339-NW_2… 339-NW   2023-03-02 00:00:00 wav      
+## # ℹ 1,156 more rows
+## # ℹ 7 more variables: julian &lt;dbl&gt;, year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;,
+## #   time_index &lt;int&gt;, length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;,
+## #   n_channels &lt;dbl&gt;
+```
+
+---
+
+# Scanning acoustic data
+
+
+```r
+files %&gt;%
+  names()
+```
+
+```
+##  [1] "file_path"           "size_Mb"             "file_name"          
+##  [4] "location"            "recording_date_time" "file_type"          
+##  [7] "julian"              "year"                "gps_enabled"        
+## [10] "time_index"          "length_seconds"      "sample_rate"        
+## [13] "n_channels"
+```
+
+--
+
+- `location` (where the recording was taken)
+- `recording_date_time` (when the recording was taken)
+
+--
+
+**`339-NW_20230528_071000.wav`**
+
+--
+
+You can also add arguments `extra_cols` (sample_rate, length_seconds, n_channels) or `tz` if you want to assign a timezone to the recordings.
+
+
+```r
+wt_audio_scanner(path = '.', file_type = 'wav', extra_cols = T, tz = 'US/Mountain')
+```
+
+---
+
+# Filtering files
+
+
+```r
+files %&gt;%
+  mutate(hour = lubridate::hour(recording_date_time)) %&gt;%
+  filter(julian %in% c(140:150),
+         hour %in% c(4:8))
+```
+
+---
+class: my-one-page-font
+
+# Generating acoustic indices and LDFCs
+
+### Running the [QUT Ecoacoustics Analysis Program](https://ap.qut.ecoacoustics.info/) on your audio files
+
+&lt;br&gt;
+
+.left-code[
+
+```r
+# Use the files tibble to execute AP on them
+wt_run_ap(
+  x = files, 
+  output_dir = 'ap_outputs', 
+  path_to_ap = '/where/you/store/AP')
+
+results &lt;- wt_glean_ap(
+  files, 
+  input_dir = ".../ap_outputs", 
+  purpose = "biotic")
+
+# The indices
+results[[2]]
+```
+]
+
+&lt;img src="339-nw-indices.png", width="50%;" align="right"&gt;
+
+---
+
+# Acoustic indices and LDFCs
+
+## Long-duration false-colour spectrogram
+
+
+```r
+results[[3]]
+```
+
+&lt;img src="339-nw.png"&gt;
+
+**March** &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; **April** &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; **May** &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; **June** &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; **July**
+
+---
+
+# Acoustic indices and LDFCs
+
+## Manipulating the results
+
+
+```r
+wt_glean_ap(files %&gt;%
+              mutate(hour = lubridate::hour(recording_date_time)) %&gt;%
+              filter(hour %in% c(0:3,21:23)), 
+            input_dir = "../ap_outputs", purpose = "biotic")
+```
+
+--
+
+&lt;img src="339-nw-noctural.png"&gt;
+
+---
+
+# Creating tasks and tags
+
+## Upload recordings and generate tasks simulatenously
+
+&gt; Go to a Project and select **Manage** &gt; **Upload Recordings to Project**
+
+
+```r
+# Choose recordings for the ABMI Stratified Design for Ecosystem Health
+
+tasks &lt;- files %&gt;%
+  inner_join(abmi_blocks, by = c("julian" = "julian", "time_index" = "time_index")) %&gt;%
+  drop_na(blocks) %&gt;%
+  group_by(location, blocks) %&gt;%
+  sample_n(1, replace = F) %&gt;%
+  ungroup() %&gt;%
+  map(.x = .$file_path, .f = ~file.copy(.x, to = "/my/selected/files"))
+```
+
+---
+
+# Creating tasks and tags
+
+## Upload recordings and create tasks later
+
+&gt; Go to the Organization &gt; Recordings &gt; Manage &gt; Upload Recordings and create tasks later using `wt_make_aru_tasks()`
+
+&lt;br&gt;
+
+```r
+my_tasks &lt;- wt_make_aru_tasks(
+  tasks,
+  output = NULL,
+  task_method = "1SPT",
+  task_length = 180
+)
+```
+
+---
+
+# Creating tasks and tags
+
+.pull-left[
+
+## From Songscope
+
+
+```r
+# Generate a tag csv to upload to WildTrax 
+wt_songscope_tags(
+  input,
+  output = "env",
+  my_output_file = NULL,
+  species_code = "CONI",
+  vocalization_type = "CALL",
+  score_filter = 50,
+  method = "USPM",
+  task_length = 180
+)
+```
+]
+
+.pull-right[
+
+## From Kaleidoscope
+
+
+```r
+# Generate a tag csv to upload to WildTrax 
+wt_kaleidoscope_tags(
+  input = "kaleidoscope_output.txt",
+  output = "my_bat_tags.csv",
+  freq_bump = 20000)
+```
+
+]
+---
+
+# Another day perhaps...
+
+- `wt_signal_level()` detects signals in audio based on amplitude thresholds
+- `wt_chop()` divides a large audio file into shorter segments
+- `wt_location_distances()` takes input latitude and longitudes and computes the distances between each set of valid points
+
+---
+
+# Handing it off to Marcus!
+
+&lt;div align="center"&gt;
+&lt;img src="handingitoff.jpg" width="500"&gt; 
+&lt;/div&gt;
+
+---
+
+class: inverse, center, middle
+name: download
+
+# Downloading Data 
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1100px&gt;&lt;/html&gt;
+
+---
+
+# Authenticating into WildTrax
+
+### First we need to set up our username and password as **environment variables**.
+
+### Note: These need to be called `WT_USERNAME` and `WT_PASSWORD`, respectively. 
+
+
+```r
+Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
+```
+
+--
+
+These values live only on your device. But **be careful** about including sensitive information in a script that you may (inadvertently) share!
+
+--
+
+One solution - save a login script file locally&lt;sup&gt;1&lt;/sup&gt;:
+
+
+```r
+credentials &lt;- "Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')"
+writeLines(credentials, "login.R")
+
+# Then, are the top of your data download script, source the file
+source("login.R")
+```
+
+--
+.footnote[
+&lt;sup&gt;1&lt;/sup&gt; You can also use the `keyring` package for secure storage of your credentials locally.]
+
+---
+
+# Authenticating into WildTrax
+
+
+```r
+# Now, all you need to do is run one function. With no arguments!!!
+
+*wt_auth()
+```
+
+---
+count:false
+
+# Authenticating into WildTrax
+
+
+```r
+# Now, all you need to do is run one function. With no arguments!!!
+
+wt_auth() 
+```
+&lt;br&gt;
+**So what's going on beneath the hood?**
+
+
+```r
+# Upon attachment, wildRtrax creates a new hidden environment (`._wt_auth_env_`) 
+# wt_auth() obtains an Auth0 token from WildTrax and stores it in this environment,
+# along with some other values. 
+
+*str(names(wildRtrax:::._wt_auth_env_))
+```
+
+```
+##  chr [1:4] "expires_in" "expiry_time" "access_token" "token_type"
+```
+
+--
+
+
+```r
+# For example, your token expires after 12 hours. Check it's expiry time:
+*wildRtrax:::._wt_auth_env_$expiry_time
+```
+
+```
+## [1] "2023-10-24 23:44:44 MDT"
+```
+
+---
+
+# So what?
+
+--
+
+### Well, now you can interact with your data directly in R!
+
+
+```r
+*# Your Auth0 token can be supplied to functions that call the WildTrax API.
+
+# Which camera/ARU projects do you have access to? Use the `wt_get_download_summary` function.
+my_projects &lt;- wt_get_download_summary( 
+  sensor_id = "CAM"
+)
+```
+
+
+
+
+```r
+glimpse(my_projects, width = 75)
+```
+
+```
+## Rows: 46
+## Columns: 7
+## $ organization_id &lt;int&gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5…
+## $ organization    &lt;chr&gt; "ABMI", "ABMI", "ABMI", "ABMI", "ABMI", "ABMI", "…
+## $ project         &lt;chr&gt; "ABMI Adopt-a-Camera 2017", "ABMI Amphibian Monit…
+## $ project_id      &lt;int&gt; 589, 391, 797, 800, 847, 979, 1102, 794, 205, 194…
+## $ sensor          &lt;chr&gt; "CAM", "CAM", "CAM", "CAM", "CAM", "CAM", "CAM", …
+## $ tasks           &lt;int&gt; 83, 19, 7, 14, 16, 19, 14, 23, 22, 552, 624, 723,…
+## $ status          &lt;chr&gt; "Published - Map+Report Only", "Published - Map+R…
+```
+
+
+---
+
+# So what?
+
+The **[`wt_download_report()`](https://abbiodiversity.github.io/wildRtrax/reference/wt_download_report.html)** function mimics the data download on the WildTrax website.
+
+You need to supply the `project_id` value, which we can get from **[`wt_get_download_summary()`](https://abbiodiversity.github.io/wildRtrax/reference/wt_get_download_summary.html)**.
+
+--
+
+
+```r
+# Let's say we're interested in the ABMI's Ecosystem Health project from 2014
+
+# Obtain the project_id value
+wt_get_download_summary(sensor_id = "CAM") %&gt;%
+  filter(project == "ABMI Ecosystem Health 2014") %&gt;%
+  select(project_id) %&gt;%
+  pull()
+```
+
+```
+## [1] 205
+```
+
+---
+
+# Download data directly into R
+
+&lt;br&gt;
+
+
+```r
+eh14_raw &lt;- wt_download_report(
+* project_id = 205,
+  sensor_id = "CAM",
+* report = "main",
+  weather_cols = FALSE
+)
+```
+
+
+
+---
+
+# A nice dataframe!
+
+&lt;br&gt;
+
+
+```r
+*eh14_raw %&gt;% select(1:15) %&gt;% glimpse(width = 75)
+```
+
+```
+## Rows: 9,632
+## Columns: 15
+## $ project_id              &lt;int&gt; 205, 205, 205, 205, 205, 205, 205, 205, 2…
+## $ location                &lt;chr&gt; "509-NW", "509-NW", "509-NW", "509-NW", "…
+## $ location_id             &lt;int&gt; 47752, 47752, 47752, 47752, 47752, 47752,…
+## $ latitude                &lt;dbl&gt; 56.6338, 56.6338, 56.6338, 56.6338, 56.63…
+## $ longitude               &lt;dbl&gt; -111.7007, -111.7007, -111.7007, -111.700…
+## $ location_buffer_m       &lt;int&gt; 5500, 5500, 5500, 5500, 5500, 5500, 5500,…
+## $ equipment_serial        &lt;chr&gt; "P900HF12171487", "P900HF12171487", "P900…
+## $ image_id                &lt;int&gt; 5584838, 5584839, 15413607, 15413608, 154…
+## $ image_date_time         &lt;chr&gt; " 2014-03-24 14:05:41", " 2014-03-24 14:0…
+## $ image_set_id            &lt;int&gt; 1344, 1344, 1344, 1344, 1344, 1344, 1344,…
+## $ image_fov               &lt;chr&gt; "WITHIN", "WITHIN", "WITHIN", "WITHIN", "…
+## $ image_snow              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ image_snow_depth_m      &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ image_water_depth_m     &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ species_scientific_name &lt;chr&gt; "", "", "", "", "", "", "", "", "", "", "…
+```
+
+---
+
+# What about two projects at once?
+
+That's easy too!
+
+
+```r
+# This time, we want ABMI's Camera Model Comparison projects, from
+# three separate years. 
+
+model_comp_ids &lt;- wt_get_download_summary(sensor_id = "CAM") %&gt;% 
+* filter(str_detect(project, "Camera Model Comparison")) %&gt;%
+  select(project_id) %&gt;%
+  pull() 
+
+# The object model_comp_ids is a numeric vector
+model_comp_ids
+```
+
+```
+## [1]  797  800  847  979 1102
+```
+
+---
+
+# What about two projects at once?
+
+
+```r
+# To avoid a for loop ...
+
+library(purrr)
+
+# Now we can feed all 3 values in project_list into `wt_download_report()`.
+model_comp_raw &lt;- map_df(.x = model_comp_ids,
+                         .f = ~ wt_download_report(
+                           project_id = .x,
+                           sensor_id = "CAM",
+                           report = "main",
+                           weather_cols = FALSE))
+```
+
+
+
+
+---
+
+# Stitched together nicely
+
+&lt;br&gt;
+
+
+```r
+model_comp_raw %&gt;% select(1:15) %&gt;% glimpse(width = 75)
+```
+
+```
+## Rows: 162,801
+## Columns: 15
+## $ project_id              &lt;int&gt; 797, 797, 797, 797, 797, 797, 797, 797, 7…
+## $ location                &lt;chr&gt; "1028-SE", "1028-SE", "1028-SE", "1028-SE…
+## $ location_id             &lt;int&gt; 44668, 44668, 44668, 44668, 44668, 44668,…
+## $ latitude                &lt;dbl&gt; 53.46036, 53.46036, 53.46036, 53.46036, 5…
+## $ longitude               &lt;dbl&gt; -110.0538, -110.0538, -110.0538, -110.053…
+## $ location_buffer_m       &lt;int&gt; 5500, 5500, 5500, 5500, 5500, 5500, 5500,…
+## $ equipment_serial        &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ image_id                &lt;int&gt; 25383339, 24642303, 25999500, 25543975, 2…
+## $ image_date_time         &lt;chr&gt; " 2018-01-27 04:28:21", " 2018-01-27 04:2…
+## $ image_set_id            &lt;int&gt; 7754, 7754, 7754, 7754, 7754, 7754, 7754,…
+## $ image_fov               &lt;chr&gt; "WITHIN", "WITHIN", "WITHIN", "WITHIN", "…
+## $ image_snow              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ image_snow_depth_m      &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ image_water_depth_m     &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ species_scientific_name &lt;chr&gt; "HOMO SAPIENS", "HOMO SAPIENS", "CANIS LU…
+```
+
+---
+
+# Available report types
+
+.pull-left[
+## Camera:
+
+1. main
+1. location
+1. tag
+1. image_report
+1. image_set
+1. project
+1. megadetector
+1. megaclassifier
+]
+
+.pull-right[
+## ARU:
+
+1. main
+1. location
+1. tag
+1. recording
+1. project
+1. birdnet
+]
+
+&lt;br&gt;
+
+### All definitions are available from the [WildTrax guide](https://wildtrax.ca/resources/user-guide/#data-download-and-data-discover).
+
+---
+
+# So what?
+
+"You've made a slightly slicker version of `read.csv()`. Big deal."
+
+--
+
+&lt;br&gt;
+
+Well, there are benefits to scripting:
+
++ Always get the most up-to-date version of the data.
++ Your collaborators are working off the same data that you are.
++ Reproducibility! 
++ Storage schmorage. 
+
+---
+
+class: inverse, center, middle
+name: wrangle
+
+# Wrangling Camera Data
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1100px&gt;&lt;/html&gt;
+
+---
+
+# Transform our camera data
+
+Most of the time, there are additional steps we want to take to transform our data into something more insightful or useful - for, say, modeling.
+
+--
+
+One common task: evaluating **independent detections**.
+
+--
+
++ There's a function in wildRtrax for that: [`wt_ind_detect()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_ind_det.R).
++ It's designed to work with the output (i.e. "main" report) from [`wt_download_report()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_summarise_cam.R).
++ You specify the detection threshold. 
+
+--
+
+
+```r
+# Back to the Ecosystem Health 2014 data.
+
+eh14_detections &lt;- wt_ind_detect(
+  x = eh14_raw,
+  threshold = 30,
+  units = "minutes",
+  remove_human = TRUE,
+  remove_domestic = TRUE
+)
+```
+
+---
+count:false
+
+# Transform our camera data
+
+Most of the time, there are additional steps we want to take to transform our data into something more insightful or useful - for, say, modeling.
+
+One common task: evaluating **independent detections**.
+
++ There's a function in wildRtrax for that: [`wt_ind_detect()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_ind_det.R).
++ It's designed to work with the output (i.e. "main" report) from [`wt_download_report()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_summarise_cam.R).
++ You specify the detection threshold. 
+
+
+```r
+# Back to the Ecosystem Health 2014 data.
+
+eh14_detections &lt;- wt_ind_detect(
+* x = eh14_raw,
+  threshold = 30,
+  units = "minutes",
+  remove_human = TRUE,
+  remove_domestic = TRUE
+)
+```
+
+---
+count:false
+
+# Transform our camera data
+
+Most of the time, there are additional steps we want to take to transform our data into something more insightful or useful - for, say, modeling.
+
+One common task: evaluating **independent detections**.
+
++ There's a function in wildRtrax for that: [`wt_ind_detect()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_ind_det.R).
++ It's designed to work with the output (i.e. "main" report) from [`wt_download_report()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_summarise_cam.R).
++ You specify the detection threshold. 
+
+
+```r
+# Back to the Ecosystem Health 2014 data.
+
+eh14_detections &lt;- wt_ind_detect(
+  x = eh14_raw, 
+* threshold = 30,
+* units = "minutes",
+  remove_human = TRUE,
+  remove_domestic = TRUE
+)
+```
+
+---
+count:false
+
+# Transform our camera data
+
+Most of the time, there are additional steps we want to take to transform our data into something more insightful or useful - for, say, modeling.
+
+One common task: evaluating **independent detections**.
+
++ There's a function in wildRtrax for that: [`wt_ind_detect()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_ind_det.R).
++ It's designed to work with the output (i.e. "main" report) from [`wt_download_report()`](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_summarise_cam.R).
++ You specify the detection threshold. 
+
+
+```r
+# Back to the Ecosystem Health 2014 data.
+
+eh14_detections &lt;- wt_ind_detect(
+  x = eh14_raw, 
+  threshold = 30,
+  units = "minutes",
+* remove_human = TRUE,
+* remove_domestic = TRUE
+)
+```
+
+---
+
+# Transform our camera data
+
+
+```r
+*glimpse(eh14_detections, width = 75)
+```
+
+```
+## Rows: 313
+## Columns: 10
+## $ detection              &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,…
+## $ project_id             &lt;int&gt; 205, 205, 205, 205, 205, 205, 205, 205, 20…
+## $ location               &lt;chr&gt; "509-NW", "509-NW", "509-NW", "509-NW", "5…
+## $ species_common_name    &lt;chr&gt; "Snowshoe Hare", "Snowshoe Hare", "Snowsho…
+## $ start_time             &lt;dttm&gt; 2014-03-27 02:10:28, 2014-04-01 03:59:24,…
+## $ end_time               &lt;dttm&gt; 2014-03-27 02:10:28, 2014-04-01 03:59:24,…
+## $ total_duration_seconds &lt;dbl&gt; 0, 0, 0, 0, 3, 0, 0, 44, 11, 4, 60, 0, 177…
+## $ n_images               &lt;int&gt; 1, 1, 1, 1, 2, 1, 1, 9, 4, 3, 9, 1, 23, 36…
+## $ avg_animals_per_image  &lt;dbl&gt; 1.000000, 1.000000, 1.000000, 1.000000, 1.…
+## $ max_animals            &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, …
+```
+
+--
+
+**313** independent detections in this dataset, when using a threshold of 30 minutes.
+
+---
+
+# Our main engine
+
+The output from `wt_ind_detect()` gave us some useful information. 
+
+--
+
+But we probably need to do additional wrangling for our data to be in the proper format for certain modeling techniques (e.g. habitat modeling, occupancy).
+
+For example, we want to evaluate the number of detections in a specified time interval (e.g. daily, weekly, or monthly), *including zeroes*. 
+
+--
+
+&lt;br&gt;
+
+## So the ⭐ of the show is: [**`wt_summarise_cam()`**](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_summarise_cam.R)
+
+---
+
+# Summarise your camera data
+
+## [**`wt_summarise_cam()`**](https://github.com/ABbiodiversity/wildRtrax/blob/main/R/wt_summarise_cam.R)
+
+&lt;br&gt;
+
+### You specify the following arguments:
+&lt;br&gt;
++ The output from `wt_ind_detect()` (e.g. the object `eh14_detections`)
+
++ Your raw data (e.g. the object `eh14_raw`)
+
++ The time interval you're interested in (e.g. weekly)
+
++ The variable you're interested in (e.g. detections, presence/absence)
+
++ The desired output format ('wide' or 'long')
+
+---
+
+# Summarise your camera data
+
+&lt;br&gt;
+
+
+```r
+# A call to `wt_summarise_cam()`:
+
+eh14_summarised &lt;- wt_summarise_cam(
+  detect_data = eh14_detections_45s,
+  raw_data = eh14_raw,
+  time_interval = "week",
+  variable = "detections",
+  output_format = "wide"
+)
+```
+
+---
+count:false
+
+# Summarise your camera data
+
+&lt;br&gt;
+
+
+```r
+# A call to `wt_summarise_cam()`:
+
+eh14_summarised &lt;- wt_summarise_cam(
+* # Supply your detection data
+* detect_data = eh14_detections_45s,
+  raw_data = eh14_raw,
+  time_interval = "week",
+  variable = "detections",
+  output_format = "wide"
+)
+```
+
+---
+count:false
+
+# Summarise your camera data
+
+&lt;br&gt;
+
+
+```r
+# A call to `wt_summarise_cam()`:
+
+eh14_summarised &lt;- wt_summarise_cam(
+  # Supply your detection data
+  detect_data = eh14_detections_45s,
+* # Supply your raw image data
+* raw_data = eh14_raw,
+  time_interval = "week",
+  variable = "detections",
+  output_format = "wide"
+)
+```
+
+---
+count:false
+
+# Summarise your camera data
+
+&lt;br&gt;
+
+
+```r
+# A call to `wt_summarise_cam()`:
+
+eh14_summarised &lt;- wt_summarise_cam(
+  # Supply your detection data
+  detect_data = eh14_detections_45s,
+  # Supply your raw image data
+  raw_data = eh14_raw,
+* # Now specify the time interval you're interested in
+* time_interval = "week",
+  variable = "detections",
+  output_format = "wide"
+)
+```
+
+---
+count: false
+
+# Summarise your camera data
+
+&lt;br&gt;
+
+
+```r
+# A call to `wt_summarise_cam()`:
+
+eh14_summarised &lt;- wt_summarise_cam(
+  # Supply your detection data
+  detect_data = eh14_detections_45s,
+  # Supply your raw image data
+  raw_data = eh14_raw,
+  # Now specify the time interval you're interested in 
+  time_interval = "week",
+* # What variable are you interested in?
+* variable = "detections",
+  output_format = "wide"
+)
+```
+
+---
+count: false
+
+# Summarise your camera data
+
+&lt;br&gt;
+
+
+```r
+# A call to `wt_summarise_cam()`:
+
+eh14_summarised &lt;- wt_summarise_cam(
+  # Supply your detection data
+  detect_data = eh14_detections_45s,
+  # Supply your raw image data
+  raw_data = eh14_raw,
+  # Now specify the time interval you're interested in 
+  time_interval = "week",
+  # What variable are you interested in?
+  variable = "detections",
+* # Your desired output format (wide or long)
+* output_format = "wide"
+)
+```
+
+---
+
+# The ultimate pipeline
+
+
+```r
+library(wildRtrax)
+Sys.setenv(WT_USERNAME = "*****",
+           WT_PASSWORD = "*****")
+wt_auth()
+
+
+data &lt;- wt_get_download_summary("CAM") %&gt;%
+  filter(project == "ABMI Ecosystem Health 2014") %&gt;%
+  select(project_id) %&gt;%
+  pull() %&gt;%
+  unlist() %&gt;%
+  wt_download_report("CAM")
+
+
+summarised &lt;- wt_ind_detect(data, 30, "minutes") %&gt;%
+  wt_summarise_cam(data, "day", "detections", "long")
+```
+--
+&lt;br&gt;
+**And now you can get straight into the science!!**
+
+---
+
+class: inverse, center, middle
+name: wrangle
+
+# Wrangling Acoustic Data 
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1100px&gt;&lt;/html&gt;
+
+---
+
+# Acoustic wrangling workflow
+
+### Part 1: Data wrangling
+
+.center[&lt;img src="pics/Slide2.PNG" width=650&gt;]
+
+.footnote[Note: we'll be reviewing the functions in this order but they can also be used independent of each other]
+
+---
+
+# Acoustic wrangling workflow
+
+### Part 2: Data analytics
+
+.center[&lt;img src="pics/Slide3.PNG" width=650&gt;]
+
+---
+
+# Part 1: Data wrangling 
+
+### So now you have some processed acoustic data.
+
+### Let's look at some wrangling functions to prepare your data for analysis.
+
+---
+
+# Recall: data download
+
+
+```r
+# Authenticate:
+
+wt_auth()
+
+# What are the projects we can access?
+
+my_projects &lt;- wt_get_download_summary(sensor_id = "ARU")
+```
+
+---
+
+# PSA
+
+### There is a *LOT* of public acoustic data available in WildTrax!!!
+
+--
+
+
+```r
+glimpse(my_projects %&gt;% 
+  filter(status %in% c("Published - Public", "Published - Map+Report Only")) %&gt;% 
+  select(-organization_id, -status))
+```
+
+```
+## Rows: 87
+## Columns: 5
+## $ organization &lt;chr&gt; "ABMI", "BU", "ABMI", "BU", "BNP", "BNP", "BU", "BU…
+## $ project      &lt;chr&gt; "ABMI Adopt-a-Camera ARU Surveys 2017", "Big Grid P…
+## $ project_id   &lt;int&gt; 42, 32, 381, 31, 462, 1175, 161, 41, 43, 84, 1313, …
+## $ sensor       &lt;chr&gt; "ARU", "ARU", "ARU", "ARU", "ARU", "ARU", "ARU", "A…
+## $ tasks        &lt;int&gt; 309, 733, 2226, 7601, 243, 214, 187, 20082, 264, 21…
+```
+**87 projects!**
+
+--
+
+
+```r
+sum(my_projects$tasks)
+```
+
+```
+## [1] 726162
+```
+**Almost half a million tasks!**
+
+---
+
+# Recall: Data Download
+
+### Ok PSA over, let's get some data:
+
+
+```r
+# Pick something small
+set.seed(12345)
+my_project &lt;- my_projects %&gt;% 
+  filter(status %in% c("Published - Public", "Published - Map+Report Only"),
+         tasks &lt; 200) %&gt;% 
+  sample_n(1)
+
+# What did we get?
+my_project$project
+```
+
+```
+## [1] "Elk Island National Park Forest Bird Surveys 2016"
+```
+
+---
+
+# Recall: data download
+
+### Note: The functions we're reviewing today operate on the **main** report
+
+
+```r
+# And download
+my_data &lt;- wt_download_report(
+  project_id = my_project$project_id,
+  sensor_id = "ARU",
+* reports = "main",
+  weather_cols = FALSE
+)
+```
+
+
+
+---
+
+# Main report structure
+
+### This is a long object; each row is a tag
+
+
+```r
+# Let's look at the fields of data we got
+colnames(my_data)
+```
+
+```
+##  [1] "organization"                "project_id"                 
+##  [3] "location"                    "location_id"                
+##  [5] "location_buffer_m"           "longitude"                  
+##  [7] "latitude"                    "equipment_make"             
+##  [9] "recording_id"                "recording_date_time"        
+## [11] "task_id"                     "aru_task_status"            
+## [13] "task_duration"               "task_method"                
+## [15] "species_code"                "species_common_name"        
+## [17] "species_scientific_name"     "individual_order"           
+## [19] "tag_id"                      "individual_count"           
+## [21] "vocalization"                "detection_time"             
+## [23] "tag_duration"                "rms_peak_dbfs"              
+## [25] "tag_is_verified"             "tag_rating"                 
+## [27] "observer"                    "observer_id"                
+## [29] "species_individual_comments" "task_comments"
+```
+
+---
+
+# What species do we have?
+
+### Do we need to do any filtering?
+
+
+```r
+my_data %&gt;% 
+  select(species_common_name, species_code) %&gt;% 
+  unique() %&gt;% 
+  head(10)
+```
+
+```
+##       species_common_name species_code
+## 1          Yellow Warbler         YEWA
+## 3        Baltimore Oriole         BAOR
+## 4           Light traffic         LITF
+## 5          Red-eyed Vireo         REVI
+## 7           American Crow         AMCR
+## 9        Mourning Warbler         MOWA
+## 11 White-throated Sparrow         WTSP
+## 12 Light Background Noise         LIBA
+## 14           Common Raven         CORA
+## 15           Red Squirrel         RESQ
+```
+
+---
+
+# wt_tidy_species()
+
+### This function removes species groups that you aren't interested in
+
+We can remove some or all of the following groups:
+- mammal (e.g., Red Squirrel)
+- amphibian (e.g., Boreal Chorus Frog)
+- abiotic (e.g., wind, rain, background noise)
+- insect (e.g., crickets)
+- bird (why would you want to take these out)
+- unknown (e.g., Unidentified Passerine)
+
+---
+
+# wt_tidy_species()
+
+### Let's get just the bird data
+
+
+
+
+```r
+# Let's zerofill to make sure we keep surveys with no birds detected
+my_tidy_data &lt;- wt_tidy_species(my_data,
+                                remove=c("mammal",
+                                         "amphibian",
+                                         "abiotic",
+                                         "insect",
+                                         "unknown"),
+*                               zerofill=TRUE)
+```
+.footnote[Note: This function downloads a species table to do the filtering]
+
+---
+
+# wt_tidy_species()
+
+### Let's check our species list again
+
+
+```r
+my_tidy_data %&gt;% 
+  select(species_common_name, species_code) %&gt;% 
+  unique() %&gt;% 
+  head(10)
+```
+
+```
+##       species_common_name species_code
+## 1          Yellow Warbler         YEWA
+## 2           American Crow         AMCR
+## 3        Least Flycatcher         LEFL
+## 5        Baltimore Oriole         BAOR
+## 6          Red-eyed Vireo         REVI
+## 9  White-throated Sparrow         WTSP
+## 10           Common Raven         CORA
+## 12         Wilson's Snipe         WISN
+## 14       Mourning Warbler         MOWA
+## 18                   NONE         NONE
+```
+
+.footnote[Note: 'NONE' indicates a survey with no birds]
+
+---
+
+# wt_replace_tmmt()
+
+### Let's look at our distribution of counts
+
+
+```r
+hist(my_tidy_data$individual_count)
+```
+
+
+```
+## Error in hist.default(my_tidy_data$individual_count) : 
+##   'x' must be numeric
+```
+
+--
+
+### Uh-oh! Why is count a character value?
+
+--
+
+
+```r
+# Look at our count values
+table(my_tidy_data$individual_count)
+```
+
+```
+## 
+##    1    2    3    4 TMTT 
+## 1855    7    4    2   42
+```
+
+---
+
+# Side-bar: what is TMTT?
+
+### TMTT stands for "too many to tag"
+
+"an abbreviation used to indicate an uncountable number of individuals within the bounds of a tag"
+
+.footnote[Note: 'TMTT' is being phased out and so the `wt_replace_tmtt()` function is primarily applicable to historic datasets]
+
+--
+
+### Ok, so now what? Options:
+- convert data to presence/absence (i.e., 1, 0)
+- regex abundance estimates out of comments field (not recommended)
+- `wt_replace_tmtt()!`
+
+--
+
+&lt;br /&gt;
+We've regexed the abundance estimates of the comments field for you!
+&lt;br /&gt;
+And created a model that predicts abundance for TMTT values based on the species and observer of the tag.
+
+---
+
+# wt_replace_tmtt()
+
+### Let's replace our TMTTs then
+
+.left-code[
+
+```r
+my_tmtt_data &lt;- wt_replace_tmtt(my_tidy_data)
+
+library(ggplot2)
+
+ggplot(my_tmtt_data) +
+  geom_histogram(
+    aes(x=as.numeric(individual_count))) +
+  xlab("Count") +
+  ylab("")
+```
+]
+--
+
+.right-plot[
+&lt;img src="Slides_files/figure-html/unnamed-chunk-61-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# wt_make_wide()
+
+### Why the weird distribution? Recall that each row is a tag
+
+--
+
+`wt_make_wide()` aggregates the counts by task and provides a column of counts for each species 
+
+
+```r
+# We can filter by sound type (i.e., call or song), let's keep everything
+my_wide_data &lt;- wt_make_wide(my_tmtt_data,
+*                            sound="all")
+```
+
+---
+
+# wt_make_wide()
+
+### What does the output look like?
+
+
+```r
+glimpse(my_wide_data[c(1:17)], width=75)
+```
+
+```
+## Rows: 107
+## Columns: 17
+## $ organization        &lt;chr&gt; "PC", "PC", "PC", "PC", "PC", "PC", "PC", "PC…
+## $ project_id          &lt;int&gt; 152, 152, 152, 152, 152, 152, 152, 152, 152, …
+## $ location            &lt;chr&gt; "EINP-AMW-11", "EINP-AMW-12", "EINP-AMW-13", …
+## $ location_id         &lt;int&gt; 58665, 58666, 58667, 58668, 58669, 58670, 586…
+## $ location_buffer_m   &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ longitude           &lt;dbl&gt; -112.8251, -112.8196, -112.8133, -112.8073, -…
+## $ latitude            &lt;dbl&gt; 53.68407, 53.68382, 53.68172, 53.67918, 53.69…
+## $ equipment_make      &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ recording_id        &lt;int&gt; 142894, 142895, 142896, 142897, 142898, 14289…
+## $ recording_date_time &lt;chr&gt; "2016-06-14 08:28:30", "2016-06-14 09:08:25",…
+## $ task_id             &lt;int&gt; 90549, 90550, 90604, 90446, 90605, 90551, 904…
+## $ aru_task_status     &lt;chr&gt; "Transcribed", "Transcribed", "Transcribed", …
+## $ task_duration       &lt;chr&gt; "600s", "600s", "600s", "600s", "600s", "600s…
+## $ task_method         &lt;chr&gt; "1SPT", "1SPT", "1SPT", "1SPT", "1SPT", "1SPT…
+## $ ALFL                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, …
+## $ AMBI                &lt;dbl&gt; 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ AMCO                &lt;dbl&gt; 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+```
+
+---
+
+# wt_make_wide()
+
+### Ok and now what does our distribution of counts look like?
+
+--
+
+&lt;img src="Slides_files/figure-html/unnamed-chunk-64-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Part 2: Data analytics
+
+### The analytics area is under active development! We have 2 tools so far:
+
+.footnote[SPOILER ALERT: This is a great area for contribution!]
+
+--
+
+- `wt_format_occupancy()` formats data for single species, single season occupancy models in the `unmarked` package
+- `wt_qpad_offsets()` calculates QPAD offsets to account for imperfect detection
+
+---
+
+# wt_format_occupancy()
+
+### This function operates on the long form of the data
+i.e., don't use `wt_make_wide()`
+
+--
+
+### Site covariates must be user-supplied, so let's make some up
+It should be a dataframe with one row for each location surveyed
+&lt;br /&gt;
+See `?unmarked::unmarkedFrameOccu()` for details
+
+
+```r
+# Make sure to sort by location so that the order
+siteCovs &lt;- my_tmtt_data %&gt;% 
+  select(location) %&gt;% 
+  unique() %&gt;% 
+  mutate(tree = runif(n(), 0, 1)) %&gt;% 
+* arrange(location)
+```
+
+---
+
+# wt_format_occupancy()
+
+### What do the `siteCovs` look like?
+
+
+```r
+glimpse(siteCovs, width=75)
+```
+
+```
+## Rows: 96
+## Columns: 2
+## $ location &lt;chr&gt; "EINP-AMW-11", "EINP-AMW-12", "EINP-AMW-13", "EINP-AMW-1…
+## $ tree     &lt;dbl&gt; 0.875773193, 0.760982328, 0.886124566, 0.456480960, 0.16…
+```
+
+--
+
+### Ok let's use the function
+
+
+```r
+# Let's pick our favourite species
+my_occu_data &lt;- wt_format_occupancy(my_tmtt_data,
+                                    species="WTSP",
+*                                   siteCovs = siteCovs)
+```
+
+---
+
+# wt_format_occupany()
+
+### What do we get for `obsCovs`?
+
+
+```r
+names(my_occu_data@obsCovs)
+```
+
+```
+## [1] "doy"      "doy2"     "hr"       "hr2"      "method"   "observer"
+```
+
+.footnote[Note: Additional observation covariates could be added via collaboration!]
+
+--
+
+### Let's see if detectability varies between observers and occupancy by "tree"
+
+
+```r
+library(unmarked)
+
+my_occu_model &lt;- occu(~ observer ~ tree,
+            my_occu_data)
+```
+
+---
+
+# wt_format_occupancy()
+
+
+```r
+my_occu_model@estimates@estimates[["det"]]
+```
+
+```
+## Detection:
+##             Estimate     SE      z P(&gt;|z|)
+## (Intercept)    0.140   1.56 0.0894   0.929
+## observer22     2.843   4.42 0.6432   0.520
+## observer23     1.942   2.21 0.8785   0.380
+## observer25     0.755   2.08 0.3630   0.717
+## observer37     1.863   2.14 0.8688   0.385
+## observer533   11.001  75.80 0.1451   0.885
+## observer534    9.235 108.57 0.0851   0.932
+## observer660    2.431   3.17 0.7670   0.443
+```
+
+Good job observers!
+
+--
+
+
+```r
+my_occu_model@estimates@estimates[["state"]]
+```
+
+```
+## Occupancy:
+##             Estimate   SE    z P(&gt;|z|)
+## (Intercept)     1.44 1.43 1.01   0.313
+## tree            1.68 2.36 0.71   0.478
+```
+
+That's a relief, because we made up "tree"...
+
+---
+
+# wt_qpad_offsets()
+
+### QPAD is a statistical approach for dealing with imperfect and variable detectability
+
+.center[&lt;img src="pics/QPADpaper.png" width=800&gt;]
+
+.footnote[ABMI &amp; the Boreal Avian Modelling (BAM) project both use QPAD in our species distribution models]
+
+---
+# wt_qpad_offsets()
+
+### How does it work?
+
+- Availability for detection (phi) is estimated with removal models
+- Perceptibility (tau) is estimated with distance models
+- Phi and tau are combined to provide values that can be used as statistical offsets in a wide variety of models
+
+.center[&lt;img src="pics/phiandtau.png" width=750&gt;]
+
+---
+
+# wt_qpad_offsets()
+
+### Ok cool, that's useful, how do I get offsets?
+- Phi and tau have already been modelled by BAM
+- The `wt_qpad_offsets()` function uses those models to calculate custom offsets for the day, time, and habitat types in your data
+
+--
+
+
+```r
+# We can get offsets for all species, or a named subset
+my_offset_data &lt;- wt_qpad_offsets(my_wide_data, species=c("OVEN", "WTSP", "YEWA"))
+```
+
+```
+## Extracting covariates for offset calculation - be patient
+## Loading QPAD estimates: BAM QPAD parameter estimates loaded, version 3 
+## 
+## Calculating offsets
+##  OVEN
+##  WTSP
+##  YEWA
+```
+
+---
+
+# wt_qpad_offsets()
+
+### Let's try a model
+
+
+```r
+# Let's look at the values
+summary(my_offset_data$WTSP)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.9244  0.9244  0.9244  0.9682  1.0665  1.0665
+```
+
+```r
+# Run a simple linear model
+my_qpad_model &lt;- lm(WTSP ~ 1, offset=my_offset_data$WTSP, data=my_wide_data)
+```
+
+
+---
+# What if I have point count data?
+
+### Functions to convert data from the point count sensor to formats compatible with the existing functions will be available soon.
+&lt;br /&gt;
+## STAY TUNED!
+
+
+```
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"hightlightSpans": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

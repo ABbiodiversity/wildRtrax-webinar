@@ -26,7 +26,7 @@ library(tidyverse)
 
 opts_chunk$set(
   #prompt = T,
-  fig.align="center", #fig.width=6, fig.height=4.5, 
+  #fig.align="center", #fig.width=6, fig.height=4.5, 
   # out.width="748px", #out.length="520.75px",
   dpi=300, #fig.path='Figs/',
   cache=T#, echo=F, warning=F, message=F
@@ -44,7 +44,7 @@ knitr::knit_hooks$set(source = function(x, options) {
 /* custom.css */
 .left-code {
   color: #777;
-  width: 90%;
+  width: 40%;
   height: 92%;
   float: left;
 }
@@ -307,16 +307,20 @@ class: my-one-page-font
 
 ### Running the [QUT Ecoacoustics Analysis Program](https://ap.qut.ecoacoustics.info/) on your audio files
 
+<br>
+
 .left-code[
 ```{r, echo=T, eval=F, warning=F, message=F}
 # Use the files tibble to execute AP on them
-wt_run_ap(x = files, 
-          output_dir = 'ap_outputs', 
-          path_to_ap = '/where/you/store/AP')
+wt_run_ap(
+  x = files, 
+  output_dir = 'ap_outputs', 
+  path_to_ap = '/where/you/store/AP')
 
-results <- wt_glean_ap(files, 
-                       input_dir = ".../ap_outputs", 
-                       purpose = "biotic")
+results <- wt_glean_ap(
+  files, 
+  input_dir = ".../ap_outputs", 
+  purpose = "biotic")
 
 # The indices
 results[[2]]
@@ -750,6 +754,15 @@ Well, there are benefits to scripting:
 
 ---
 
+class: inverse, center, middle
+name: wrangle
+
+# Wrangling Camera Data
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1100px></html>
+
+---
+
 # Transform our camera data
 
 Most of the time, there are additional steps we want to take to transform our data into something more insightful or useful - for, say, modeling.
@@ -1082,3 +1095,534 @@ summarised <- wt_ind_detect(data, 30, "minutes") %>%
 **And now you can get straight into the science!!**
 
 ---
+
+class: inverse, center, middle
+name: wrangle
+
+# Wrangling Acoustic Data 
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1100px></html>
+
+---
+
+# Acoustic wrangling workflow
+
+### Part 1: Data wrangling
+
+.center[<img src="pics/Slide2.PNG" width=650>]
+
+.footnote[Note: we'll be reviewing the functions in this order but they can also be used independent of each other]
+
+---
+
+# Acoustic wrangling workflow
+
+### Part 2: Data analytics
+
+.center[<img src="pics/Slide3.PNG" width=650>]
+
+---
+
+# Part 1: Data wrangling 
+
+### So now you have some processed acoustic data.
+
+### Let's look at some wrangling functions to prepare your data for analysis.
+
+---
+
+# Recall: data download
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE, cache=TRUE}
+
+# Authenticate:
+
+wt_auth()
+
+# What are the projects we can access?
+
+my_projects <- wt_get_download_summary(sensor_id = "ARU")
+
+```
+
+---
+
+# PSA
+
+### There is a *LOT* of public acoustic data available in WildTrax!!!
+
+--
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+glimpse(my_projects %>% 
+  filter(status %in% c("Published - Public", "Published - Map+Report Only")) %>% 
+  select(-organization_id, -status))
+
+```
+**87 projects!**
+
+--
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+sum(my_projects$tasks)
+
+```
+**Almost half a million tasks!**
+
+---
+
+# Recall: Data Download
+
+### Ok PSA over, let's get some data:
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+# Pick something small
+set.seed(12345)
+my_project <- my_projects %>% 
+  filter(status %in% c("Published - Public", "Published - Map+Report Only"),
+         tasks < 200) %>% 
+  sample_n(1)
+
+# What did we get?
+my_project$project
+
+```
+
+---
+
+# Recall: data download
+
+### Note: The functions we're reviewing today operate on the **main** report
+
+```{r, echo=TRUE, eval=FALSE, message=FALSE, include=TRUE}
+
+# And download
+my_data <- wt_download_report(
+  project_id = my_project$project_id,
+  sensor_id = "ARU",
+  reports = "main", #<<
+  weather_cols = FALSE
+)
+
+```
+
+```{r, echo=FALSE, eval=TRUE, message=FALSE, include=FALSE, cache = TRUE}
+
+#source("login.R")
+#wt_auth()
+my_data <- wt_download_report(
+  project_id = my_project$project_id,
+  sensor_id = "ARU",
+  reports = "main",
+  weather_cols = FALSE
+)
+
+```
+
+---
+
+# Main report structure
+
+### This is a long object; each row is a tag
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+# Let's look at the fields of data we got
+colnames(my_data)
+
+```
+
+---
+
+# What species do we have?
+
+### Do we need to do any filtering?
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+my_data %>% 
+  select(species_common_name, species_code) %>% 
+  unique() %>% 
+  head(10)
+
+```
+
+---
+
+# wt_tidy_species()
+
+### This function removes species groups that you aren't interested in
+
+We can remove some or all of the following groups:
+- mammal (e.g., Red Squirrel)
+- amphibian (e.g., Boreal Chorus Frog)
+- abiotic (e.g., wind, rain, background noise)
+- insect (e.g., crickets)
+- bird (why would you want to take these out)
+- unknown (e.g., Unidentified Passerine)
+
+---
+
+# wt_tidy_species()
+
+### Let's get just the bird data
+
+```{r, echo=FALSE, eval=TRUE, message=FALSE, include=FALSE}
+
+#source("login.R")
+#wt_auth()
+my_tidy_data <- wt_tidy_species(my_data,
+                                remove=c("mammal",
+                                         "amphibian",
+                                         "abiotic",
+                                         "insect",
+                                         "unknown"),
+                                zerofill=TRUE)
+
+```
+
+```{r, echo=TRUE, eval=FALSE, message=FALSE, include=TRUE}
+
+# Let's zerofill to make sure we keep surveys with no birds detected
+my_tidy_data <- wt_tidy_species(my_data,
+                                remove=c("mammal",
+                                         "amphibian",
+                                         "abiotic",
+                                         "insect",
+                                         "unknown"),
+                                zerofill=TRUE) #<<
+
+```
+.footnote[Note: This function downloads a species table to do the filtering]
+
+---
+
+# wt_tidy_species()
+
+### Let's check our species list again
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+my_tidy_data %>% 
+  select(species_common_name, species_code) %>% 
+  unique() %>% 
+  head(10)
+
+```
+
+.footnote[Note: 'NONE' indicates a survey with no birds]
+
+---
+
+# wt_replace_tmmt()
+
+### Let's look at our distribution of counts
+
+```{r, echo=TRUE, eval=FALSE, message=FALSE, include=TRUE}
+
+hist(my_tidy_data$individual_count)
+
+```
+
+```{r, echo=FALSE, eval=TRUE, message=FALSE, include=TRUE}
+
+try(hist(my_tidy_data$individual_count))
+
+```
+
+--
+
+### Uh-oh! Why is count a character value?
+
+--
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+# Look at our count values
+table(my_tidy_data$individual_count)
+
+```
+
+---
+
+# Side-bar: what is TMTT?
+
+### TMTT stands for "too many to tag"
+
+"an abbreviation used to indicate an uncountable number of individuals within the bounds of a tag"
+
+.footnote[Note: 'TMTT' is being phased out and so the `wt_replace_tmtt()` function is primarily applicable to historic datasets]
+
+--
+
+### Ok, so now what? Options:
+- convert data to presence/absence (i.e., 1, 0)
+- regex abundance estimates out of comments field (not recommended)
+- `wt_replace_tmtt()!`
+
+--
+
+<br />
+We've regexed the abundance estimates of the comments field for you!
+<br />
+And created a model that predicts abundance for TMTT values based on the species and observer of the tag.
+
+---
+
+# wt_replace_tmtt()
+
+### Let's replace our TMTTs then
+
+.left-code[
+```{r tmtt, echo=TRUE, eval=FALSE, message=FALSE, include=TRUE, fig.width=4}
+
+my_tmtt_data <- wt_replace_tmtt(my_tidy_data)
+
+library(ggplot2)
+
+ggplot(my_tmtt_data) +
+  geom_histogram(
+    aes(x=as.numeric(individual_count))) +
+  xlab("Count") +
+  ylab("")
+
+```
+]
+--
+
+.right-plot[
+```{r ref.label="tmtt", echo=FALSE, message=FALSE, out.width="100%", fig.height=5}
+
+```
+]
+
+---
+
+# wt_make_wide()
+
+### Why the weird distribution? Recall that each row is a tag
+
+--
+
+`wt_make_wide()` aggregates the counts by task and provides a column of counts for each species 
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+# We can filter by sound type (i.e., call or song), let's keep everything
+my_wide_data <- wt_make_wide(my_tmtt_data,
+                             sound="all") #<<
+
+```
+
+---
+
+# wt_make_wide()
+
+### What does the output look like?
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+glimpse(my_wide_data[c(1:17)], width=75)
+
+```
+
+---
+
+# wt_make_wide()
+
+### Ok and now what does our distribution of counts look like?
+
+--
+
+```{r, echo=FALSE, eval=TRUE, message=FALSE, include=TRUE, fig.width=7, fig.height=3}
+
+# Let's try white-throated sparrow
+ggplot(my_wide_data %>% 
+         filter(WTSP > 0)) +
+  geom_histogram(aes(x=WTSP))  +
+  xlab("WTSP count") +
+  ylab("")
+
+```
+
+
+---
+
+# Part 2: Data analytics
+
+### The analytics area is under active development! We have 2 tools so far:
+
+.footnote[SPOILER ALERT: This is a great area for contribution!]
+
+--
+
+- `wt_format_occupancy()` formats data for single species, single season occupancy models in the `unmarked` package
+- `wt_qpad_offsets()` calculates QPAD offsets to account for imperfect detection
+
+---
+
+# wt_format_occupancy()
+
+### This function operates on the long form of the data
+i.e., don't use `wt_make_wide()`
+
+--
+
+### Site covariates must be user-supplied, so let's make some up
+It should be a dataframe with one row for each location surveyed
+<br />
+See `?unmarked::unmarkedFrameOccu()` for details
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+# Make sure to sort by location so that the order
+siteCovs <- my_tmtt_data %>% 
+  select(location) %>% 
+  unique() %>% 
+  mutate(tree = runif(n(), 0, 1)) %>% 
+  arrange(location) #<<
+
+```
+
+---
+
+# wt_format_occupancy()
+
+### What do the `siteCovs` look like?
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+glimpse(siteCovs, width=75)
+
+```
+
+--
+
+### Ok let's use the function
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+# Let's pick our favourite species
+my_occu_data <- wt_format_occupancy(my_tmtt_data,
+                                    species="WTSP",
+                                    siteCovs = siteCovs) #<<
+
+```
+
+---
+
+# wt_format_occupany()
+
+### What do we get for `obsCovs`?
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+names(my_occu_data@obsCovs)
+
+```
+
+.footnote[Note: Additional observation covariates could be added via collaboration!]
+
+--
+
+### Let's see if detectability varies between observers and occupancy by "tree"
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+library(unmarked)
+
+my_occu_model <- occu(~ observer ~ tree,
+            my_occu_data)
+
+```
+
+---
+
+# wt_format_occupancy()
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+my_occu_model@estimates@estimates[["det"]]
+
+```
+
+Good job observers!
+
+--
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+my_occu_model@estimates@estimates[["state"]]
+
+```
+
+That's a relief, because we made up "tree"...
+
+---
+
+# wt_qpad_offsets()
+
+### QPAD is a statistical approach for dealing with imperfect and variable detectability
+
+.center[<img src="pics/QPADpaper.png" width=800>]
+
+.footnote[ABMI & the Boreal Avian Modelling (BAM) project both use QPAD in our species distribution models]
+
+---
+# wt_qpad_offsets()
+
+### How does it work?
+
+- Availability for detection (phi) is estimated with removal models
+- Perceptibility (tau) is estimated with distance models
+- Phi and tau are combined to provide values that can be used as statistical offsets in a wide variety of models
+
+.center[<img src="pics/phiandtau.png" width=750>]
+
+---
+
+# wt_qpad_offsets()
+
+### Ok cool, that's useful, how do I get offsets?
+- Phi and tau have already been modelled by BAM
+- The `wt_qpad_offsets()` function uses those models to calculate custom offsets for the day, time, and habitat types in your data
+
+--
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+# We can get offsets for all species, or a named subset
+my_offset_data <- wt_qpad_offsets(my_wide_data, species=c("OVEN", "WTSP", "YEWA"))
+
+```
+
+---
+
+# wt_qpad_offsets()
+
+### Let's try a model
+
+```{r, echo=TRUE, eval=TRUE, message=FALSE, include=TRUE}
+
+# Let's look at the values
+summary(my_offset_data$WTSP)
+
+# Run a simple linear model
+my_qpad_model <- lm(WTSP ~ 1, offset=my_offset_data$WTSP, data=my_wide_data)
+
+```
+
+
+---
+# What if I have point count data?
+
+### Functions to convert data from the point count sensor to formats compatible with the existing functions will be available soon.
+<br />
+## STAY TUNED!
+
+
+```
+

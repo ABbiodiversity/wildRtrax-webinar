@@ -36,7 +36,7 @@ class: center, middle, inverse, title-slide
 /* custom.css */
 .left-code {
   color: #777;
-  width: 90%;
+  width: 40%;
   height: 92%;
   float: left;
 }
@@ -244,18 +244,18 @@ files
 
 ```
 ## # A tibble: 1,166 × 13
-##    file_path    size_Mb file_name location recording_date_time file_type
-##    &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;    
-##  1 /volumes/bu…    4.36 339-NW_2… 339-NW   2022-11-17 15:28:51 wav      
-##  2 /volumes/bu…  106.   339-NW_2… 339-NW   2023-03-01 00:00:00 wav      
-##  3 /volumes/bu…   31.8  339-NW_2… 339-NW   2023-03-01 02:00:00 wav      
-##  4 /volumes/bu…  106.   339-NW_2… 339-NW   2023-03-01 09:00:00 wav      
-##  5 /volumes/bu…   31.8  339-NW_2… 339-NW   2023-03-01 10:30:00 wav      
-##  6 /volumes/bu…   31.8  339-NW_2… 339-NW   2023-03-01 12:00:00 wav      
-##  7 /volumes/bu…   31.8  339-NW_2… 339-NW   2023-03-01 15:00:00 wav      
-##  8 /volumes/bu…   31.8  339-NW_2… 339-NW   2023-03-01 18:16:00 wav      
-##  9 /volumes/bu…   31.8  339-NW_2… 339-NW   2023-03-01 20:16:00 wav      
-## 10 /volumes/bu…  106.   339-NW_2… 339-NW   2023-03-02 00:00:00 wav      
+##    file_path      size_Mb file_name location recording_date_time file_type
+##    &lt;chr&gt;            &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;    
+##  1 /volumes/buda…    4.36 339-NW_2… 339-NW   2022-11-17 15:28:51 wav      
+##  2 /volumes/buda…  106.   339-NW_2… 339-NW   2023-03-01 00:00:00 wav      
+##  3 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 02:00:00 wav      
+##  4 /volumes/buda…  106.   339-NW_2… 339-NW   2023-03-01 09:00:00 wav      
+##  5 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 10:30:00 wav      
+##  6 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 12:00:00 wav      
+##  7 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 15:00:00 wav      
+##  8 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 18:16:00 wav      
+##  9 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 20:16:00 wav      
+## 10 /volumes/buda…  106.   339-NW_2… 339-NW   2023-03-02 00:00:00 wav      
 ## # ℹ 1,156 more rows
 ## # ℹ 7 more variables: julian &lt;dbl&gt;, year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;,
 ## #   time_index &lt;int&gt;, length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;,
@@ -317,17 +317,21 @@ class: my-one-page-font
 
 ### Running the [QUT Ecoacoustics Analysis Program](https://ap.qut.ecoacoustics.info/) on your audio files
 
+&lt;br&gt;
+
 .left-code[
 
 ```r
 # Use the files tibble to execute AP on them
-wt_run_ap(x = files, 
-          output_dir = 'ap_outputs', 
-          path_to_ap = '/where/you/store/AP')
+wt_run_ap(
+  x = files, 
+  output_dir = 'ap_outputs', 
+  path_to_ap = '/where/you/store/AP')
 
-results &lt;- wt_glean_ap(files, 
-                       input_dir = ".../ap_outputs", 
-                       purpose = "biotic")
+results &lt;- wt_glean_ap(
+  files, 
+  input_dir = ".../ap_outputs", 
+  purpose = "biotic")
 
 # The indices
 results[[2]]
@@ -553,7 +557,7 @@ wt_auth()
 ```
 
 ```
-## [1] "2023-10-24 19:37:09 MDT"
+## [1] "2023-10-24 23:44:44 MDT"
 ```
 
 ---
@@ -793,6 +797,15 @@ Well, there are benefits to scripting:
 + Your collaborators are working off the same data that you are.
 + Reproducibility! 
 + Storage schmorage. 
+
+---
+
+class: inverse, center, middle
+name: wrangle
+
+# Wrangling Camera Data
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1100px&gt;&lt;/html&gt;
 
 ---
 
@@ -1135,6 +1148,620 @@ summarised &lt;- wt_ind_detect(data, 30, "minutes") %&gt;%
 **And now you can get straight into the science!!**
 
 ---
+
+class: inverse, center, middle
+name: wrangle
+
+# Wrangling Acoustic Data 
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1100px&gt;&lt;/html&gt;
+
+---
+
+# Acoustic wrangling workflow
+
+### Part 1: Data wrangling
+
+.center[&lt;img src="pics/Slide2.PNG" width=650&gt;]
+
+.footnote[Note: we'll be reviewing the functions in this order but they can also be used independent of each other]
+
+---
+
+# Acoustic wrangling workflow
+
+### Part 2: Data analytics
+
+.center[&lt;img src="pics/Slide3.PNG" width=650&gt;]
+
+---
+
+# Part 1: Data wrangling 
+
+### So now you have some processed acoustic data.
+
+### Let's look at some wrangling functions to prepare your data for analysis.
+
+---
+
+# Recall: data download
+
+
+```r
+# Authenticate:
+
+wt_auth()
+
+# What are the projects we can access?
+
+my_projects &lt;- wt_get_download_summary(sensor_id = "ARU")
+```
+
+---
+
+# PSA
+
+### There is a *LOT* of public acoustic data available in WildTrax!!!
+
+--
+
+
+```r
+glimpse(my_projects %&gt;% 
+  filter(status %in% c("Published - Public", "Published - Map+Report Only")) %&gt;% 
+  select(-organization_id, -status))
+```
+
+```
+## Rows: 87
+## Columns: 5
+## $ organization &lt;chr&gt; "ABMI", "BU", "ABMI", "BU", "BNP", "BNP", "BU", "BU…
+## $ project      &lt;chr&gt; "ABMI Adopt-a-Camera ARU Surveys 2017", "Big Grid P…
+## $ project_id   &lt;int&gt; 42, 32, 381, 31, 462, 1175, 161, 41, 43, 84, 1313, …
+## $ sensor       &lt;chr&gt; "ARU", "ARU", "ARU", "ARU", "ARU", "ARU", "ARU", "A…
+## $ tasks        &lt;int&gt; 309, 733, 2226, 7601, 243, 214, 187, 20082, 264, 21…
+```
+**87 projects!**
+
+--
+
+
+```r
+sum(my_projects$tasks)
+```
+
+```
+## [1] 726162
+```
+**Almost half a million tasks!**
+
+---
+
+# Recall: Data Download
+
+### Ok PSA over, let's get some data:
+
+
+```r
+# Pick something small
+set.seed(12345)
+my_project &lt;- my_projects %&gt;% 
+  filter(status %in% c("Published - Public", "Published - Map+Report Only"),
+         tasks &lt; 200) %&gt;% 
+  sample_n(1)
+
+# What did we get?
+my_project$project
+```
+
+```
+## [1] "Elk Island National Park Forest Bird Surveys 2016"
+```
+
+---
+
+# Recall: data download
+
+### Note: The functions we're reviewing today operate on the **main** report
+
+
+```r
+# And download
+my_data &lt;- wt_download_report(
+  project_id = my_project$project_id,
+  sensor_id = "ARU",
+* reports = "main",
+  weather_cols = FALSE
+)
+```
+
+
+
+---
+
+# Main report structure
+
+### This is a long object; each row is a tag
+
+
+```r
+# Let's look at the fields of data we got
+colnames(my_data)
+```
+
+```
+##  [1] "organization"                "project_id"                 
+##  [3] "location"                    "location_id"                
+##  [5] "location_buffer_m"           "longitude"                  
+##  [7] "latitude"                    "equipment_make"             
+##  [9] "recording_id"                "recording_date_time"        
+## [11] "task_id"                     "aru_task_status"            
+## [13] "task_duration"               "task_method"                
+## [15] "species_code"                "species_common_name"        
+## [17] "species_scientific_name"     "individual_order"           
+## [19] "tag_id"                      "individual_count"           
+## [21] "vocalization"                "detection_time"             
+## [23] "tag_duration"                "rms_peak_dbfs"              
+## [25] "tag_is_verified"             "tag_rating"                 
+## [27] "observer"                    "observer_id"                
+## [29] "species_individual_comments" "task_comments"
+```
+
+---
+
+# What species do we have?
+
+### Do we need to do any filtering?
+
+
+```r
+my_data %&gt;% 
+  select(species_common_name, species_code) %&gt;% 
+  unique() %&gt;% 
+  head(10)
+```
+
+```
+##       species_common_name species_code
+## 1          Yellow Warbler         YEWA
+## 3        Baltimore Oriole         BAOR
+## 4           Light traffic         LITF
+## 5          Red-eyed Vireo         REVI
+## 7           American Crow         AMCR
+## 9        Mourning Warbler         MOWA
+## 11 White-throated Sparrow         WTSP
+## 12 Light Background Noise         LIBA
+## 14           Common Raven         CORA
+## 15           Red Squirrel         RESQ
+```
+
+---
+
+# wt_tidy_species()
+
+### This function removes species groups that you aren't interested in
+
+We can remove some or all of the following groups:
+- mammal (e.g., Red Squirrel)
+- amphibian (e.g., Boreal Chorus Frog)
+- abiotic (e.g., wind, rain, background noise)
+- insect (e.g., crickets)
+- bird (why would you want to take these out)
+- unknown (e.g., Unidentified Passerine)
+
+---
+
+# wt_tidy_species()
+
+### Let's get just the bird data
+
+
+
+
+```r
+# Let's zerofill to make sure we keep surveys with no birds detected
+my_tidy_data &lt;- wt_tidy_species(my_data,
+                                remove=c("mammal",
+                                         "amphibian",
+                                         "abiotic",
+                                         "insect",
+                                         "unknown"),
+*                               zerofill=TRUE)
+```
+.footnote[Note: This function downloads a species table to do the filtering]
+
+---
+
+# wt_tidy_species()
+
+### Let's check our species list again
+
+
+```r
+my_tidy_data %&gt;% 
+  select(species_common_name, species_code) %&gt;% 
+  unique() %&gt;% 
+  head(10)
+```
+
+```
+##       species_common_name species_code
+## 1          Yellow Warbler         YEWA
+## 2           American Crow         AMCR
+## 3        Least Flycatcher         LEFL
+## 5        Baltimore Oriole         BAOR
+## 6          Red-eyed Vireo         REVI
+## 9  White-throated Sparrow         WTSP
+## 10           Common Raven         CORA
+## 12         Wilson's Snipe         WISN
+## 14       Mourning Warbler         MOWA
+## 18                   NONE         NONE
+```
+
+.footnote[Note: 'NONE' indicates a survey with no birds]
+
+---
+
+# wt_replace_tmmt()
+
+### Let's look at our distribution of counts
+
+
+```r
+hist(my_tidy_data$individual_count)
+```
+
+
+```
+## Error in hist.default(my_tidy_data$individual_count) : 
+##   'x' must be numeric
+```
+
+--
+
+### Uh-oh! Why is count a character value?
+
+--
+
+
+```r
+# Look at our count values
+table(my_tidy_data$individual_count)
+```
+
+```
+## 
+##    1    2    3    4 TMTT 
+## 1855    7    4    2   42
+```
+
+---
+
+# Side-bar: what is TMTT?
+
+### TMTT stands for "too many to tag"
+
+"an abbreviation used to indicate an uncountable number of individuals within the bounds of a tag"
+
+.footnote[Note: 'TMTT' is being phased out and so the `wt_replace_tmtt()` function is primarily applicable to historic datasets]
+
+--
+
+### Ok, so now what? Options:
+- convert data to presence/absence (i.e., 1, 0)
+- regex abundance estimates out of comments field (not recommended)
+- `wt_replace_tmtt()!`
+
+--
+
+&lt;br /&gt;
+We've regexed the abundance estimates of the comments field for you!
+&lt;br /&gt;
+And created a model that predicts abundance for TMTT values based on the species and observer of the tag.
+
+---
+
+# wt_replace_tmtt()
+
+### Let's replace our TMTTs then
+
+.left-code[
+
+```r
+my_tmtt_data &lt;- wt_replace_tmtt(my_tidy_data)
+
+library(ggplot2)
+
+ggplot(my_tmtt_data) +
+  geom_histogram(
+    aes(x=as.numeric(individual_count))) +
+  xlab("Count") +
+  ylab("")
+```
+]
+--
+
+.right-plot[
+&lt;img src="wildRtrax-intro-preprocess_files/figure-html/unnamed-chunk-61-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# wt_make_wide()
+
+### Why the weird distribution? Recall that each row is a tag
+
+--
+
+`wt_make_wide()` aggregates the counts by task and provides a column of counts for each species 
+
+
+```r
+# We can filter by sound type (i.e., call or song), let's keep everything
+my_wide_data &lt;- wt_make_wide(my_tmtt_data,
+*                            sound="all")
+```
+
+---
+
+# wt_make_wide()
+
+### What does the output look like?
+
+
+```r
+glimpse(my_wide_data[c(1:17)], width=75)
+```
+
+```
+## Rows: 107
+## Columns: 17
+## $ organization        &lt;chr&gt; "PC", "PC", "PC", "PC", "PC", "PC", "PC", "PC…
+## $ project_id          &lt;int&gt; 152, 152, 152, 152, 152, 152, 152, 152, 152, …
+## $ location            &lt;chr&gt; "EINP-AMW-11", "EINP-AMW-12", "EINP-AMW-13", …
+## $ location_id         &lt;int&gt; 58665, 58666, 58667, 58668, 58669, 58670, 586…
+## $ location_buffer_m   &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ longitude           &lt;dbl&gt; -112.8251, -112.8196, -112.8133, -112.8073, -…
+## $ latitude            &lt;dbl&gt; 53.68407, 53.68382, 53.68172, 53.67918, 53.69…
+## $ equipment_make      &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ recording_id        &lt;int&gt; 142894, 142895, 142896, 142897, 142898, 14289…
+## $ recording_date_time &lt;chr&gt; "2016-06-14 08:28:30", "2016-06-14 09:08:25",…
+## $ task_id             &lt;int&gt; 90549, 90550, 90604, 90446, 90605, 90551, 904…
+## $ aru_task_status     &lt;chr&gt; "Transcribed", "Transcribed", "Transcribed", …
+## $ task_duration       &lt;chr&gt; "600s", "600s", "600s", "600s", "600s", "600s…
+## $ task_method         &lt;chr&gt; "1SPT", "1SPT", "1SPT", "1SPT", "1SPT", "1SPT…
+## $ ALFL                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, …
+## $ AMBI                &lt;dbl&gt; 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ AMCO                &lt;dbl&gt; 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+```
+
+---
+
+# wt_make_wide()
+
+### Ok and now what does our distribution of counts look like?
+
+--
+
+&lt;img src="wildRtrax-intro-preprocess_files/figure-html/unnamed-chunk-64-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Part 2: Data analytics
+
+### The analytics area is under active development! We have 2 tools so far:
+
+.footnote[SPOILER ALERT: This is a great area for contribution!]
+
+--
+
+- `wt_format_occupancy()` formats data for single species, single season occupancy models in the `unmarked` package
+- `wt_qpad_offsets()` calculates QPAD offsets to account for imperfect detection
+
+---
+
+# wt_format_occupancy()
+
+### This function operates on the long form of the data
+i.e., don't use `wt_make_wide()`
+
+--
+
+### Site covariates must be user-supplied, so let's make some up
+It should be a dataframe with one row for each location surveyed
+&lt;br /&gt;
+See `?unmarked::unmarkedFrameOccu()` for details
+
+
+```r
+# Make sure to sort by location so that the order
+siteCovs &lt;- my_tmtt_data %&gt;% 
+  select(location) %&gt;% 
+  unique() %&gt;% 
+  mutate(tree = runif(n(), 0, 1)) %&gt;% 
+* arrange(location)
+```
+
+---
+
+# wt_format_occupancy()
+
+### What do the `siteCovs` look like?
+
+
+```r
+glimpse(siteCovs, width=75)
+```
+
+```
+## Rows: 96
+## Columns: 2
+## $ location &lt;chr&gt; "EINP-AMW-11", "EINP-AMW-12", "EINP-AMW-13", "EINP-AMW-1…
+## $ tree     &lt;dbl&gt; 0.875773193, 0.760982328, 0.886124566, 0.456480960, 0.16…
+```
+
+--
+
+### Ok let's use the function
+
+
+```r
+# Let's pick our favourite species
+my_occu_data &lt;- wt_format_occupancy(my_tmtt_data,
+                                    species="WTSP",
+*                                   siteCovs = siteCovs)
+```
+
+---
+
+# wt_format_occupany()
+
+### What do we get for `obsCovs`?
+
+
+```r
+names(my_occu_data@obsCovs)
+```
+
+```
+## [1] "doy"      "doy2"     "hr"       "hr2"      "method"   "observer"
+```
+
+.footnote[Note: Additional observation covariates could be added via collaboration!]
+
+--
+
+### Let's see if detectability varies between observers and occupancy by "tree"
+
+
+```r
+library(unmarked)
+
+my_occu_model &lt;- occu(~ observer ~ tree,
+            my_occu_data)
+```
+
+---
+
+# wt_format_occupancy()
+
+
+```r
+my_occu_model@estimates@estimates[["det"]]
+```
+
+```
+## Detection:
+##             Estimate     SE      z P(&gt;|z|)
+## (Intercept)    0.140   1.56 0.0894   0.929
+## observer22     2.843   4.42 0.6432   0.520
+## observer23     1.942   2.21 0.8785   0.380
+## observer25     0.755   2.08 0.3630   0.717
+## observer37     1.863   2.14 0.8688   0.385
+## observer533   11.001  75.80 0.1451   0.885
+## observer534    9.235 108.57 0.0851   0.932
+## observer660    2.431   3.17 0.7670   0.443
+```
+
+Good job observers!
+
+--
+
+
+```r
+my_occu_model@estimates@estimates[["state"]]
+```
+
+```
+## Occupancy:
+##             Estimate   SE    z P(&gt;|z|)
+## (Intercept)     1.44 1.43 1.01   0.313
+## tree            1.68 2.36 0.71   0.478
+```
+
+That's a relief, because we made up "tree"...
+
+---
+
+# wt_qpad_offsets()
+
+### QPAD is a statistical approach for dealing with imperfect and variable detectability
+
+.center[&lt;img src="pics/QPADpaper.png" width=800&gt;]
+
+.footnote[ABMI &amp; the Boreal Avian Modelling (BAM) project both use QPAD in our species distribution models]
+
+---
+# wt_qpad_offsets()
+
+### How does it work?
+
+- Availability for detection (phi) is estimated with removal models
+- Perceptibility (tau) is estimated with distance models
+- Phi and tau are combined to provide values that can be used as statistical offsets in a wide variety of models
+
+.center[&lt;img src="pics/phiandtau.png" width=750&gt;]
+
+---
+
+# wt_qpad_offsets()
+
+### Ok cool, that's useful, how do I get offsets?
+- Phi and tau have already been modelled by BAM
+- The `wt_qpad_offsets()` function uses those models to calculate custom offsets for the day, time, and habitat types in your data
+
+--
+
+
+```r
+# We can get offsets for all species, or a named subset
+my_offset_data &lt;- wt_qpad_offsets(my_wide_data, species=c("OVEN", "WTSP", "YEWA"))
+```
+
+```
+## Extracting covariates for offset calculation - be patient
+## Loading QPAD estimates: BAM QPAD parameter estimates loaded, version 3 
+## 
+## Calculating offsets
+##  OVEN
+##  WTSP
+##  YEWA
+```
+
+---
+
+# wt_qpad_offsets()
+
+### Let's try a model
+
+
+```r
+# Let's look at the values
+summary(my_offset_data$WTSP)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.9244  0.9244  0.9244  0.9682  1.0665  1.0665
+```
+
+```r
+# Run a simple linear model
+my_qpad_model &lt;- lm(WTSP ~ 1, offset=my_offset_data$WTSP, data=my_wide_data)
+```
+
+
+---
+# What if I have point count data?
+
+### Functions to convert data from the point count sensor to formats compatible with the existing functions will be available soon.
+&lt;br /&gt;
+## STAY TUNED!
+
+
+```
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
