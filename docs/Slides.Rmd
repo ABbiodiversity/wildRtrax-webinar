@@ -285,7 +285,7 @@ wt_audio_scanner(path = '.', file_type = 'wav', extra_cols = T, tz = 'US/Mountai
 
 # Filtering files
 
-```{r, echo=T, eval=F, message=F, warning=F}
+```{r, echo=T, eval=T, message=F, warning=F}
 files %>%
   mutate(hour = lubridate::hour(recording_date_time)) %>%
   filter(julian %in% c(140:150),
@@ -565,7 +565,7 @@ my_projects <- my_projects %>% filter(organization == "ABMI")
 
 ```{r, echo=TRUE, eval=TRUE, message=TRUE, include=TRUE, cache = TRUE}
 
-glimpse(my_projects, width = 75)
+glimpse(my_projects, width = 90)
 
 ```
 
@@ -627,7 +627,7 @@ eh14_raw <- wt_download_report(
 <br>
 
 ```{r}
-eh14_raw %>% select(1:15) %>% glimpse(width = 75) #<<
+eh14_raw %>% select(1:15) %>% glimpse(width = 90) #<<
 ```
 
 ---
@@ -639,7 +639,7 @@ That's easy too!
 ```{r echo=TRUE, eval=TRUE, message=TRUE, include=TRUE}
 
 # This time, we want ABMI's Camera Model Comparison projects, from
-# three separate years. 
+# five separate years. 
 
 model_comp_ids <- wt_get_download_summary(sensor_id = "CAM") %>% 
   filter(str_detect(project, "Camera Model Comparison")) %>% #<<
@@ -681,18 +681,6 @@ model_comp_raw <- map_df(.x = model_comp_ids,
                         report = "main",
                         weather_cols = FALSE
                       ))
-
-```
-
----
-
-# Stitched together nicely
-
-<br>
-
-```{r}
-
-model_comp_raw %>% select(1:15) %>% glimpse(width = 75)
 
 ```
 
@@ -758,7 +746,7 @@ name: wrangle
 
 # Transform our camera data
 
-Most of the time, there are additional steps we want to take to transform our data into something more insightful or useful - for, say, modeling.
+Most of the time, there are additional steps we want to take to transform our tag data into something more insightful or useful - for, say, modeling.
 
 --
 
@@ -930,7 +918,7 @@ For example, we want to evaluate the number of detections in a specified time in
 # A call to `wt_summarise_cam()`:
 
 eh14_summarised <- wt_summarise_cam(
-  detect_data = eh14_detections_45s,
+  detect_data = eh14_detections,
   raw_data = eh14_raw,
   time_interval = "week",
   variable = "detections",
@@ -952,7 +940,7 @@ count:false
 
 eh14_summarised <- wt_summarise_cam(
   # Supply your detection data #<<
-  detect_data = eh14_detections_45s, #<<
+  detect_data = eh14_detections, #<<
   raw_data = eh14_raw,
   time_interval = "week",
   variable = "detections",
@@ -974,7 +962,7 @@ count:false
 
 eh14_summarised <- wt_summarise_cam(
   # Supply your detection data
-  detect_data = eh14_detections_45s,
+  detect_data = eh14_detections,
   # Supply your raw image data #<<
   raw_data = eh14_raw, #<<
   time_interval = "week",
@@ -997,7 +985,7 @@ count:false
 
 eh14_summarised <- wt_summarise_cam(
   # Supply your detection data
-  detect_data = eh14_detections_45s,
+  detect_data = eh14_detections,
   # Supply your raw image data
   raw_data = eh14_raw,
   # Now specify the time interval you're interested in #<<
@@ -1021,7 +1009,7 @@ count: false
 
 eh14_summarised <- wt_summarise_cam(
   # Supply your detection data
-  detect_data = eh14_detections_45s,
+  detect_data = eh14_detections,
   # Supply your raw image data
   raw_data = eh14_raw,
   # Now specify the time interval you're interested in 
@@ -1046,7 +1034,7 @@ count: false
 
 eh14_summarised <- wt_summarise_cam(
   # Supply your detection data
-  detect_data = eh14_detections_45s,
+  detect_data = eh14_detections,
   # Supply your raw image data
   raw_data = eh14_raw,
   # Now specify the time interval you're interested in 
@@ -1056,6 +1044,29 @@ eh14_summarised <- wt_summarise_cam(
   # Your desired output format (wide or long) #<<
   output_format = "wide" #<<
 )
+
+```
+
+---
+
+# Ready to go for analysis
+
+```{r, eval=TRUE, echo=FALSE, include=TRUE, message=FALSE}
+
+eh14_summarised <- wt_summarise_cam(
+  detect_data = eh14_detections,
+  raw_data = eh14_raw,
+  time_interval = "week",
+  variable = "detections",
+  output_format = "long"
+)
+
+```
+
+
+```{r, eval=TRUE, echo=TRUE, include=TRUE}
+
+glimpse(eh14_summarised, width = 90)
 
 ```
 
@@ -1071,16 +1082,15 @@ Sys.setenv(WT_USERNAME = "*****",
 wt_auth()
 
 
-data <- wt_get_download_summary("CAM") %>%
+raw_data <- wt_get_download_summary("CAM") %>%
   filter(project == "ABMI Ecosystem Health 2014") %>%
   select(project_id) %>%
   pull() %>%
-  unlist() %>%
   wt_download_report("CAM")
 
 
-summarised <- wt_ind_detect(data, 30, "minutes") %>%
-  wt_summarise_cam(data, "day", "detections", "long")
+summarised <- wt_ind_detect(raw_data, 30, "minutes") %>%
+  wt_summarise_cam(raw_data, "day", "detections", "long")
 
 ```
 --
@@ -1608,14 +1618,45 @@ my_qpad_model <- lm(WTSP ~ 1, offset=my_offset_data$WTSP, data=my_wide_data)
 
 ```
 
+---
+
+class: inverse, center, middle
+name: wrangle
+
+# Contributing to wildRtrax 
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1100px></html>
 
 ---
-# What if I have point count data?
 
-### Functions to convert data from the point count sensor to formats compatible with the existing functions will be available soon.
-<br />
-## STAY TUNED!
+# Contributing
+
+## Issues
+
++ If you think you've found a bug, or would like to suggest a new feature/function, please file an [Issue](https://github.com/ABbiodiversity/wildRtrax/issues) on the package's Github repository
+
++ We'll do our best to respond in a timely manner! 
+
+--
+
+## Pull Requests
+
++ We welcome these at any time!
+
++ If you have an idea for a function, feel free to [Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the wildRtrax repo, code it up, and [submit a PR](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) for us to look at. 
+
++ You can do this for minor fixes to existing functions/text, too. 
+
++ You'll be acknowledged as a package author!
+
+--
+<br>
+
+[Quick Demonstration ...](https://github.com/ABbiodiversity/wildRtrax)
 
 
-```
+
+
+
+
 

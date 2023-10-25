@@ -4,7 +4,7 @@
     <title>wildRtrax</title>
     <meta charset="utf-8" />
     <meta name="author" content="Marcus Becker, Alex MacPhail, Elly Knight" />
-    <meta name="date" content="2023-10-24" />
+    <meta name="date" content="2023-10-25" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
@@ -24,7 +24,7 @@ class: center, middle, inverse, title-slide
 ### Marcus Becker, Alex MacPhail, Elly Knight
 ]
 .date[
-### 2023-10-24
+### 2023-10-25
 ]
 
 ---
@@ -237,22 +237,21 @@ files
 
 ```
 ## # A tibble: 1,166 × 13
-##    file_path      size_Mb file_name location recording_date_time file_type
-##    &lt;chr&gt;            &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;    
-##  1 /volumes/buda…    4.36 339-NW_2… 339-NW   2022-11-17 15:28:51 wav      
-##  2 /volumes/buda…  106.   339-NW_2… 339-NW   2023-03-01 00:00:00 wav      
-##  3 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 02:00:00 wav      
-##  4 /volumes/buda…  106.   339-NW_2… 339-NW   2023-03-01 09:00:00 wav      
-##  5 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 10:30:00 wav      
-##  6 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 12:00:00 wav      
-##  7 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 15:00:00 wav      
-##  8 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 18:16:00 wav      
-##  9 /volumes/buda…   31.8  339-NW_2… 339-NW   2023-03-01 20:16:00 wav      
-## 10 /volumes/buda…  106.   339-NW_2… 339-NW   2023-03-02 00:00:00 wav      
+##    file_path     size_Mb file_name location recording_date_time file_type julian  year
+##    &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;
+##  1 /volumes/bud…    4.36 339-NW_2… 339-NW   2022-11-17 15:28:51 wav          321  2022
+##  2 /volumes/bud…  106.   339-NW_2… 339-NW   2023-03-01 00:00:00 wav           60  2023
+##  3 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 02:00:00 wav           60  2023
+##  4 /volumes/bud…  106.   339-NW_2… 339-NW   2023-03-01 09:00:00 wav           60  2023
+##  5 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 10:30:00 wav           60  2023
+##  6 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 12:00:00 wav           60  2023
+##  7 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 15:00:00 wav           60  2023
+##  8 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 18:16:00 wav           60  2023
+##  9 /volumes/bud…   31.8  339-NW_2… 339-NW   2023-03-01 20:16:00 wav           60  2023
+## 10 /volumes/bud…  106.   339-NW_2… 339-NW   2023-03-02 00:00:00 wav           61  2023
 ## # ℹ 1,156 more rows
-## # ℹ 7 more variables: julian &lt;dbl&gt;, year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;,
-## #   time_index &lt;int&gt;, length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;,
-## #   n_channels &lt;dbl&gt;
+## # ℹ 5 more variables: gps_enabled &lt;lgl&gt;, time_index &lt;int&gt;, length_seconds &lt;dbl&gt;,
+## #   sample_rate &lt;dbl&gt;, n_channels &lt;dbl&gt;
 ```
 
 ---
@@ -301,6 +300,25 @@ files %&gt;%
   mutate(hour = lubridate::hour(recording_date_time)) %&gt;%
   filter(julian %in% c(140:150),
          hour %in% c(4:8))
+```
+
+```
+## # A tibble: 22 × 14
+##    file_path     size_Mb file_name location recording_date_time file_type julian  year
+##    &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;
+##  1 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-20 05:57:00 wav          140  2023
+##  2 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-20 07:27:00 wav          140  2023
+##  3 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-21 05:55:00 wav          141  2023
+##  4 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-21 07:25:00 wav          141  2023
+##  5 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-22 05:54:00 wav          142  2023
+##  6 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-22 07:24:00 wav          142  2023
+##  7 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-23 05:53:00 wav          143  2023
+##  8 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-23 07:23:00 wav          143  2023
+##  9 /volumes/bud…   106.  339-NW_2… 339-NW   2023-05-24 05:51:00 wav          144  2023
+## 10 /volumes/bud…    31.8 339-NW_2… 339-NW   2023-05-24 07:21:00 wav          144  2023
+## # ℹ 12 more rows
+## # ℹ 6 more variables: gps_enabled &lt;lgl&gt;, time_index &lt;int&gt;, length_seconds &lt;dbl&gt;,
+## #   sample_rate &lt;dbl&gt;, n_channels &lt;dbl&gt;, hour &lt;int&gt;
 ```
 
 ---
@@ -550,7 +568,7 @@ wt_auth()
 ```
 
 ```
-## [1] "2023-10-24 23:44:44 MDT"
+## [1] "2023-10-25 18:38:47 MDT"
 ```
 
 ---
@@ -575,19 +593,19 @@ my_projects &lt;- wt_get_download_summary(
 
 
 ```r
-glimpse(my_projects, width = 75)
+glimpse(my_projects, width = 90)
 ```
 
 ```
 ## Rows: 46
 ## Columns: 7
-## $ organization_id &lt;int&gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5…
-## $ organization    &lt;chr&gt; "ABMI", "ABMI", "ABMI", "ABMI", "ABMI", "ABMI", "…
-## $ project         &lt;chr&gt; "ABMI Adopt-a-Camera 2017", "ABMI Amphibian Monit…
-## $ project_id      &lt;int&gt; 589, 391, 797, 800, 847, 979, 1102, 794, 205, 194…
-## $ sensor          &lt;chr&gt; "CAM", "CAM", "CAM", "CAM", "CAM", "CAM", "CAM", …
-## $ tasks           &lt;int&gt; 83, 19, 7, 14, 16, 19, 14, 23, 22, 552, 624, 723,…
-## $ status          &lt;chr&gt; "Published - Map+Report Only", "Published - Map+R…
+## $ organization_id &lt;int&gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5…
+## $ organization    &lt;chr&gt; "ABMI", "ABMI", "ABMI", "ABMI", "ABMI", "ABMI", "ABMI", "ABMI", …
+## $ project         &lt;chr&gt; "ABMI Adopt-a-Camera 2017", "ABMI Amphibian Monitoring 2020", "A…
+## $ project_id      &lt;int&gt; 589, 391, 797, 800, 847, 979, 1102, 794, 205, 194, 197, 193, 195…
+## $ sensor          &lt;chr&gt; "CAM", "CAM", "CAM", "CAM", "CAM", "CAM", "CAM", "CAM", "CAM", "…
+## $ tasks           &lt;int&gt; 83, 19, 7, 14, 16, 19, 14, 23, 22, 552, 624, 723, 712, 418, 175,…
+## $ status          &lt;chr&gt; "Published - Map+Report Only", "Published - Map+Report Only", "A…
 ```
 
 
@@ -642,27 +660,27 @@ eh14_raw &lt;- wt_download_report(
 
 
 ```r
-*eh14_raw %&gt;% select(1:15) %&gt;% glimpse(width = 75)
+*eh14_raw %&gt;% select(1:15) %&gt;% glimpse(width = 90)
 ```
 
 ```
 ## Rows: 9,632
 ## Columns: 15
-## $ project_id              &lt;int&gt; 205, 205, 205, 205, 205, 205, 205, 205, 2…
-## $ location                &lt;chr&gt; "509-NW", "509-NW", "509-NW", "509-NW", "…
-## $ location_id             &lt;int&gt; 47752, 47752, 47752, 47752, 47752, 47752,…
-## $ latitude                &lt;dbl&gt; 56.6338, 56.6338, 56.6338, 56.6338, 56.63…
-## $ longitude               &lt;dbl&gt; -111.7007, -111.7007, -111.7007, -111.700…
-## $ location_buffer_m       &lt;int&gt; 5500, 5500, 5500, 5500, 5500, 5500, 5500,…
-## $ equipment_serial        &lt;chr&gt; "P900HF12171487", "P900HF12171487", "P900…
-## $ image_id                &lt;int&gt; 5584838, 5584839, 15413607, 15413608, 154…
-## $ image_date_time         &lt;chr&gt; " 2014-03-24 14:05:41", " 2014-03-24 14:0…
-## $ image_set_id            &lt;int&gt; 1344, 1344, 1344, 1344, 1344, 1344, 1344,…
-## $ image_fov               &lt;chr&gt; "WITHIN", "WITHIN", "WITHIN", "WITHIN", "…
-## $ image_snow              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ image_snow_depth_m      &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ image_water_depth_m     &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ species_scientific_name &lt;chr&gt; "", "", "", "", "", "", "", "", "", "", "…
+## $ project_id              &lt;int&gt; 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 2…
+## $ location                &lt;chr&gt; "509-NW", "509-NW", "509-NW", "509-NW", "509-NW", "509-N…
+## $ location_id             &lt;int&gt; 47752, 47752, 47752, 47752, 47752, 47752, 47752, 47752, …
+## $ latitude                &lt;dbl&gt; 56.6338, 56.6338, 56.6338, 56.6338, 56.6338, 56.6338, 56…
+## $ longitude               &lt;dbl&gt; -111.7007, -111.7007, -111.7007, -111.7007, -111.7007, -…
+## $ location_buffer_m       &lt;int&gt; 5500, 5500, 5500, 5500, 5500, 5500, 5500, 5500, 5500, 55…
+## $ equipment_serial        &lt;chr&gt; "P900HF12171487", "P900HF12171487", "P900HF12171487", "P…
+## $ image_id                &lt;int&gt; 5584838, 5584839, 15413607, 15413608, 15413500, 15413561…
+## $ image_date_time         &lt;chr&gt; " 2014-03-24 14:05:41", " 2014-03-24 14:05:43", " 2014-0…
+## $ image_set_id            &lt;int&gt; 1344, 1344, 1344, 1344, 1344, 1344, 1344, 1344, 1344, 13…
+## $ image_fov               &lt;chr&gt; "WITHIN", "WITHIN", "WITHIN", "WITHIN", "WITHIN", "WITHI…
+## $ image_snow              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+## $ image_snow_depth_m      &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+## $ image_water_depth_m     &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+## $ species_scientific_name &lt;chr&gt; "", "", "", "", "", "", "", "", "", "", "", "", "", "", …
 ```
 
 ---
@@ -674,7 +692,7 @@ That's easy too!
 
 ```r
 # This time, we want ABMI's Camera Model Comparison projects, from
-# three separate years. 
+# five separate years. 
 
 model_comp_ids &lt;- wt_get_download_summary(sensor_id = "CAM") %&gt;% 
 * filter(str_detect(project, "Camera Model Comparison")) %&gt;%
@@ -710,37 +728,6 @@ model_comp_raw &lt;- map_df(.x = model_comp_ids,
 
 
 
-
----
-
-# Stitched together nicely
-
-&lt;br&gt;
-
-
-```r
-model_comp_raw %&gt;% select(1:15) %&gt;% glimpse(width = 75)
-```
-
-```
-## Rows: 162,801
-## Columns: 15
-## $ project_id              &lt;int&gt; 797, 797, 797, 797, 797, 797, 797, 797, 7…
-## $ location                &lt;chr&gt; "1028-SE", "1028-SE", "1028-SE", "1028-SE…
-## $ location_id             &lt;int&gt; 44668, 44668, 44668, 44668, 44668, 44668,…
-## $ latitude                &lt;dbl&gt; 53.46036, 53.46036, 53.46036, 53.46036, 5…
-## $ longitude               &lt;dbl&gt; -110.0538, -110.0538, -110.0538, -110.053…
-## $ location_buffer_m       &lt;int&gt; 5500, 5500, 5500, 5500, 5500, 5500, 5500,…
-## $ equipment_serial        &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ image_id                &lt;int&gt; 25383339, 24642303, 25999500, 25543975, 2…
-## $ image_date_time         &lt;chr&gt; " 2018-01-27 04:28:21", " 2018-01-27 04:2…
-## $ image_set_id            &lt;int&gt; 7754, 7754, 7754, 7754, 7754, 7754, 7754,…
-## $ image_fov               &lt;chr&gt; "WITHIN", "WITHIN", "WITHIN", "WITHIN", "…
-## $ image_snow              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ image_snow_depth_m      &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ image_water_depth_m     &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ species_scientific_name &lt;chr&gt; "HOMO SAPIENS", "HOMO SAPIENS", "CANIS LU…
-```
 
 ---
 
@@ -804,7 +791,7 @@ name: wrangle
 
 # Transform our camera data
 
-Most of the time, there are additional steps we want to take to transform our data into something more insightful or useful - for, say, modeling.
+Most of the time, there are additional steps we want to take to transform our tag data into something more insightful or useful - for, say, modeling.
 
 --
 
@@ -986,7 +973,7 @@ For example, we want to evaluate the number of detections in a specified time in
 # A call to `wt_summarise_cam()`:
 
 eh14_summarised &lt;- wt_summarise_cam(
-  detect_data = eh14_detections_45s,
+  detect_data = eh14_detections,
   raw_data = eh14_raw,
   time_interval = "week",
   variable = "detections",
@@ -1007,7 +994,7 @@ count:false
 
 eh14_summarised &lt;- wt_summarise_cam(
 * # Supply your detection data
-* detect_data = eh14_detections_45s,
+* detect_data = eh14_detections,
   raw_data = eh14_raw,
   time_interval = "week",
   variable = "detections",
@@ -1028,7 +1015,7 @@ count:false
 
 eh14_summarised &lt;- wt_summarise_cam(
   # Supply your detection data
-  detect_data = eh14_detections_45s,
+  detect_data = eh14_detections,
 * # Supply your raw image data
 * raw_data = eh14_raw,
   time_interval = "week",
@@ -1050,7 +1037,7 @@ count:false
 
 eh14_summarised &lt;- wt_summarise_cam(
   # Supply your detection data
-  detect_data = eh14_detections_45s,
+  detect_data = eh14_detections,
   # Supply your raw image data
   raw_data = eh14_raw,
 * # Now specify the time interval you're interested in
@@ -1073,7 +1060,7 @@ count: false
 
 eh14_summarised &lt;- wt_summarise_cam(
   # Supply your detection data
-  detect_data = eh14_detections_45s,
+  detect_data = eh14_detections,
   # Supply your raw image data
   raw_data = eh14_raw,
   # Now specify the time interval you're interested in 
@@ -1097,7 +1084,7 @@ count: false
 
 eh14_summarised &lt;- wt_summarise_cam(
   # Supply your detection data
-  detect_data = eh14_detections_45s,
+  detect_data = eh14_detections,
   # Supply your raw image data
   raw_data = eh14_raw,
   # Now specify the time interval you're interested in 
@@ -1107,6 +1094,30 @@ eh14_summarised &lt;- wt_summarise_cam(
 * # Your desired output format (wide or long)
 * output_format = "wide"
 )
+```
+
+---
+
+# Ready to go for analysis
+
+
+
+
+
+```r
+glimpse(eh14_summarised, width = 90)
+```
+
+```
+## Rows: 7,600
+## Columns: 7
+## $ project_id          &lt;int&gt; 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, 205, …
+## $ location            &lt;chr&gt; "509-NW", "509-NW", "509-NW", "509-NW", "509-NW", "509-NW", …
+## $ week                &lt;dbl&gt; 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, …
+## $ n_days_effort       &lt;int&gt; 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, …
+## $ species_common_name &lt;chr&gt; "Black Bear", "Canada Lynx", "Coyote", "Cranes, Rails, Coots…
+## $ variable            &lt;chr&gt; "detections", "detections", "detections", "detections", "det…
+## $ value               &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, …
 ```
 
 ---
@@ -1121,16 +1132,15 @@ Sys.setenv(WT_USERNAME = "*****",
 wt_auth()
 
 
-data &lt;- wt_get_download_summary("CAM") %&gt;%
+raw_data &lt;- wt_get_download_summary("CAM") %&gt;%
   filter(project == "ABMI Ecosystem Health 2014") %&gt;%
   select(project_id) %&gt;%
   pull() %&gt;%
-  unlist() %&gt;%
   wt_download_report("CAM")
 
 
-summarised &lt;- wt_ind_detect(data, 30, "minutes") %&gt;%
-  wt_summarise_cam(data, "day", "detections", "long")
+summarised &lt;- wt_ind_detect(raw_data, 30, "minutes") %&gt;%
+  wt_summarise_cam(raw_data, "day", "detections", "long")
 ```
 --
 &lt;br&gt;
@@ -1204,11 +1214,11 @@ glimpse(my_projects %&gt;%
 ```
 ## Rows: 87
 ## Columns: 5
-## $ organization &lt;chr&gt; "ABMI", "BU", "ABMI", "BU", "BNP", "BNP", "BU", "BU…
-## $ project      &lt;chr&gt; "ABMI Adopt-a-Camera ARU Surveys 2017", "Big Grid P…
-## $ project_id   &lt;int&gt; 42, 32, 381, 31, 462, 1175, 161, 41, 43, 84, 1313, …
-## $ sensor       &lt;chr&gt; "ARU", "ARU", "ARU", "ARU", "ARU", "ARU", "ARU", "A…
-## $ tasks        &lt;int&gt; 309, 733, 2226, 7601, 243, 214, 187, 20082, 264, 21…
+## $ organization &lt;chr&gt; "ABMI", "BU", "BU", "ABMI", "BNP", "BNP", "BU", "BU", "ABMI", "…
+## $ project      &lt;chr&gt; "ABMI Adopt-a-Camera ARU Surveys 2017", "Big Grid Pilot Program…
+## $ project_id   &lt;int&gt; 42, 32, 31, 381, 462, 1175, 161, 41, 43, 84, 1313, 1272, 1475, …
+## $ sensor       &lt;chr&gt; "ARU", "ARU", "ARU", "ARU", "ARU", "ARU", "ARU", "ARU", "ARU", …
+## $ tasks        &lt;int&gt; 309, 733, 7601, 2226, 243, 214, 187, 20082, 264, 2111, 1363, 18…
 ```
 **87 projects!**
 
@@ -1220,7 +1230,7 @@ sum(my_projects$tasks)
 ```
 
 ```
-## [1] 726162
+## [1] 726348
 ```
 **Almost half a million tasks!**
 
@@ -1471,7 +1481,7 @@ ggplot(my_tmtt_data) +
 --
 
 .right-plot[
-&lt;img src="Slides_files/figure-html/unnamed-chunk-61-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="Slides_files/figure-html/unnamed-chunk-62-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -1532,7 +1542,7 @@ glimpse(my_wide_data[c(1:17)], width=75)
 
 --
 
-&lt;img src="Slides_files/figure-html/unnamed-chunk-64-1.png" style="display: block; margin: auto;" /&gt;
+![](Slides_files/figure-html/unnamed-chunk-65-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -1740,16 +1750,47 @@ summary(my_offset_data$WTSP)
 my_qpad_model &lt;- lm(WTSP ~ 1, offset=my_offset_data$WTSP, data=my_wide_data)
 ```
 
+---
+
+class: inverse, center, middle
+name: wrangle
+
+# Contributing to wildRtrax 
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1100px&gt;&lt;/html&gt;
 
 ---
-# What if I have point count data?
 
-### Functions to convert data from the point count sensor to formats compatible with the existing functions will be available soon.
-&lt;br /&gt;
-## STAY TUNED!
+# Contributing
+
+## Issues
+
++ If you think you've found a bug, or would like to suggest a new feature/function, please file an [Issue](https://github.com/ABbiodiversity/wildRtrax/issues) on the package's Github repository
+
++ We'll do our best to respond in a timely manner! 
+
+--
+
+## Pull Requests
+
++ We welcome these at any time!
+
++ If you have an idea for a function, feel free to [Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the wildRtrax repo, code it up, and [submit a PR](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) for us to look at. 
+
++ You can do this for minor fixes to existing functions/text, too. 
+
++ You'll be acknowledged as a package author!
+
+--
+&lt;br&gt;
+
+[Quick Demonstration ...](https://github.com/ABbiodiversity/wildRtrax)
 
 
-```
+
+
+
+
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
