@@ -1172,7 +1172,7 @@ glimpse(my_projects %>%
 sum(my_projects$tasks)
 
 ```
-**Almost half a million tasks!**
+**Almost three quarters of a million tasks!**
 
 ---
 
