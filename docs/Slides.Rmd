@@ -1621,7 +1621,7 @@ my_qpad_model <- lm(WTSP ~ 1, offset=my_offset_data$WTSP, data=my_wide_data)
 ---
 
 class: inverse, center, middle
-name: wrangle
+name: contribute
 
 # Contributing to wildRtrax 
 
